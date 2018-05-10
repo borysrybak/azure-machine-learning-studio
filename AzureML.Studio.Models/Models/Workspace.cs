@@ -1,8 +1,8 @@
-﻿namespace AzureML.Studio.Models.Entities
+﻿namespace AzureML.Studio.Models
 {
     public class Workspace
     {
-        public string WorkspaceId { get; set; }
+        public string Id { get; set; }
 
         public string FriendlyName { get; set; }
         public string Description { get; set; }

@@ -2,7 +2,7 @@
 {
     public class Experiment
     {
-        public string ExperimentId { get; set; }
+        public string Id { get; set; }
 
         public string RunId { get; set; }
         public string ParentExperimentId { get; set; }

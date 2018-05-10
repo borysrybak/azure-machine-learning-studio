@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMLPS", "AzureMLPS\Azur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureML.Studio", "AzureML.Studio\AzureML.Studio.csproj", "{389897A9-AA99-47A3-B054-3B5796B5F219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureML.Studio.Common", "AzureML.Studio.Common\AzureML.Studio.Common.csproj", "{30E8A585-25D6-430A-910B-72433E0513EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureML.Studio.Common", "AzureML.Studio.Common\AzureML.Studio.Common.csproj", "{30E8A585-25D6-430A-910B-72433E0513EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureML.Studio.Models", "AzureML.Studio.Models\AzureML.Studio.Models.csproj", "{D4F972F1-E6B3-4F71-8710-7B4153950BB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureML.Studio.Models", "AzureML.Studio.Models\AzureML.Studio.Models.csproj", "{D4F972F1-E6B3-4F71-8710-7B4153950BB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureML.Studio.Services", "AzureML.Studio.Services\AzureML.Studio.Services.csproj", "{EBFFFC0C-B967-4023-B531-A473D51A0480}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D4F972F1-E6B3-4F71-8710-7B4153950BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4F972F1-E6B3-4F71-8710-7B4153950BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4F972F1-E6B3-4F71-8710-7B4153950BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBFFFC0C-B967-4023-B531-A473D51A0480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBFFFC0C-B967-4023-B531-A473D51A0480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBFFFC0C-B967-4023-B531-A473D51A0480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBFFFC0C-B967-4023-B531-A473D51A0480}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

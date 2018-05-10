@@ -1,4 +1,4 @@
-﻿using AzureML.Studio.Models.Entities;
+﻿using AzureML.Studio.Models;
 using System;
 
 namespace AzureML.Studio.Common.Exceptions

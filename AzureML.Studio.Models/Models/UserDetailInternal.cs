@@ -1,8 +1,8 @@
-﻿namespace AzureML.Studio.Models.Entities
+﻿namespace AzureML.Studio.Models
 {
     public class UserDetailInternal
     {
-        public string UserId { get; set; }
+        public string Id { get; set; }
 
         public string Email { get; set; }
         public string Name { get; set; }

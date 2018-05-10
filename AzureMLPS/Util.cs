@@ -1,15 +1,13 @@
 ﻿using AzureML.Contract;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AzureML
-{    public class ManagementUtil
+{
+    public class ManagementUtil
     {
         internal string AuthorizationToken { get; set; }
         private string _sdkName { get; set; }

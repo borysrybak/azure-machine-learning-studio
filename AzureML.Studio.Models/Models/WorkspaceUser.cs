@@ -1,4 +1,4 @@
-﻿namespace AzureML.Studio.Models.Entities
+﻿namespace AzureML.Studio.Models
 {
     public class WorkspaceUser
     {
@@ -8,10 +8,10 @@
             Email = workspaceUserInternal.User.Email;
             Name = workspaceUserInternal.User.Email;
             Role = workspaceUserInternal.User.Role;
-            UserId = workspaceUserInternal.User.UserId;
+            Id = workspaceUserInternal.User.Id;
         }
 
-        public string UserId { get; set; }
+        public string Id { get; set; }
 
         public string Status { get; set; }
         public string Email { get; set; }

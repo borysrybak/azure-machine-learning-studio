@@ -1,4 +1,4 @@
-﻿namespace AzureML.Studio.Models.Entities
+﻿namespace AzureML.Studio.Models
 {
     public class WebService
     {

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureML.Studio.Models\AzureML.Studio.Models.csproj" />
+    <ProjectReference Include="..\AzureML.Studio.Common\AzureML.Studio.Common.csproj" />
   </ItemGroup>
 
 </Project>
