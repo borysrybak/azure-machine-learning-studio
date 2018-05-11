@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AzureML.Studio.Services
 {
-    public class HttpClientService
+    internal class HttpClientService
     {
         private string _sdkName { get; set; }
         internal string AuthorizationToken { get; set; }

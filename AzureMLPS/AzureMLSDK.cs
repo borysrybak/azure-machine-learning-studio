@@ -131,7 +131,7 @@ namespace AzureML
             return httpReq;
         }
 
-        private static X509Certificate2 GetStoreCertificate(string thumbprint)
+        private X509Certificate2 GetStoreCertificate(string thumbprint)
         {
             List<StoreLocation> locations = new List<StoreLocation>  {
                 StoreLocation.CurrentUser,
@@ -161,7 +161,7 @@ namespace AzureML
               thumbprint));
         }
 
-        public string UpdateNodesPositions(string jsonGraph, StudioGraph graph)
+        private string UpdateNodesPositions(string jsonGraph, StudioGraph graph)
         {            
             dynamic experimentDag = jss.Deserialize<object>(jsonGraph);
             List<string> regularNodes = ExtractNodesFromXml(experimentDag["Graph"]["SerializedClientData"]);                         
