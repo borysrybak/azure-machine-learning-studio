@@ -1,6 +1,5 @@
 ﻿using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Utils;
-using AzureML.Studio.Models;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;

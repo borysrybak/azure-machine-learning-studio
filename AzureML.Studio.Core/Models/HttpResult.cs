@@ -2,12 +2,12 @@
 
 namespace AzureML.Studio.Core.Models
 {
-    public class HttpResult
+    internal class HttpResult
     {
-        public bool IsSuccess { get; set; }
-        public int StatusCode { get; set; }
-        public string ReasonPhrase { get; set; }
-        public string Payload { get; set; }
-        public Stream PayloadStream { get; set; }
+        internal bool IsSuccess { get; set; }
+        internal int StatusCode { get; set; }
+        internal string ReasonPhrase { get; set; }
+        internal string Payload { get; set; }
+        internal Stream PayloadStream { get; set; }
     }
 }

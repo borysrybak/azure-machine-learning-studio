@@ -1,15 +1,15 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class EndPoint
+    internal class EndPoint
     {
-        public string BaseUri { get; set; }
-        public int Size { get; set; }
-        public string Name { get; set; }
-        public string EndpointType { get; set; }
-        public string CredentialContainer { get; set; }
-        public string AccessCredential { get; set; }
-        public string Location { get; set; }
-        public string FileType { get; set; }
-        public bool IsAuxiliary { get; set; }
+        internal string BaseUri { get; set; }
+        internal int Size { get; set; }
+        internal string Name { get; set; }
+        internal string EndpointType { get; set; }
+        internal string CredentialContainer { get; set; }
+        internal string AccessCredential { get; set; }
+        internal string Location { get; set; }
+        internal string FileType { get; set; }
+        internal bool IsAuxiliary { get; set; }
     }
 }

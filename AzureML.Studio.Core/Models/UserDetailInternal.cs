@@ -1,11 +1,11 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class UserDetailInternal
+    internal class UserDetailInternal
     {
-        public string Id { get; set; }
+        internal string Id { get; set; }
 
-        public string Email { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
+        internal string Email { get; set; }
+        internal string Name { get; set; }
+        internal string Role { get; set; }
     }
 }

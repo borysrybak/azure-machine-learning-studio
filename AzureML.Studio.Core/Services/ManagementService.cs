@@ -16,7 +16,7 @@ using System.Xml;
 
 namespace AzureML.Studio.Core.Services
 {
-    public abstract class ManagementService
+    public class ManagementService
     {
         private ApiSettingsProfile _apiSettings;
         private readonly HttpClientService _httpClientService;
@@ -201,6 +201,24 @@ namespace AzureML.Studio.Core.Services
 
             return result;
         }
+
+        private async void DownloadFileAsync(string url, string filename)
+        {
+            var httpResult = await _httpClientService.HttpGet(url, false);
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            if (File.Exists(filename))
+            {
+                throw new Exception(filename + " alread exists.");
+            }
+            using (var fileStream = File.Create(filename))
+            {
+                httpResult.PayloadStream.Seek(0, SeekOrigin.Begin);
+                httpResult.PayloadStream.CopyTo(fileStream);
+            }
+        }
         #endregion
 
         #region Workspace
@@ -309,6 +327,139 @@ namespace AzureML.Studio.Core.Services
             }
             else
                 throw new AmlRestApiException(httpResult);
+        }
+        #endregion
+
+        #region Dataset
+        public Dataset[] GetDataset(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/datasources", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var datasets = JsonConvert.DeserializeObject<Dataset[]>(httpResult.Payload);
+
+            return datasets;
+        }
+
+        public void DeleteDataset(WorkspaceSetting setting, string datasetFamilyId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/datasources/family/{1}", setting.WorkspaceId, datasetFamilyId);
+            var httpResult = _httpClientService.HttpDelete(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void DownloadDatasetAsync(WorkspaceSetting setting, string datasetId, string filename)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/datasources/{1}", setting.WorkspaceId, datasetId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var dataset = JsonConvert.DeserializeObject<Dataset>(httpResult.Payload);
+            var downloadUrl = dataset.DownloadLocation.BaseUri + dataset.DownloadLocation.Location + dataset.DownloadLocation.AccessCredential;
+            DownloadFileAsync(downloadUrl, filename);
+        }
+
+        public async Task<string> UploadResourceAsync(WorkspaceSetting setting, string fileFormat, string fileName)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("resourceuploads/workspaces/{0}/?userStorage=true&dataTypeId={1}", setting.WorkspaceId, fileFormat);
+            var httpResult = await _httpClientService.HttpPostFile(queryUrl, fileName);
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+
+            return httpResult.Payload;
+        }
+
+        public string UploadResource(WorkspaceSetting setting, string fileFormat)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("resourceuploads/workspaces/{0}/?userStorage=true&dataTypeId={1}", setting.WorkspaceId, fileFormat);
+            var httpResult = _httpClientService.HttpPost(queryUrl, string.Empty).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+
+            return httpResult.Payload;
+        }
+
+        public async Task<string> UploadResourceInChunksAsnyc(WorkspaceSetting setting, int numOfBlocks, int blockId, string uploadId, string fileName, string fileFormat)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("blobuploads/workspaces/{0}/?numberOfBlocks={1}&blockId={2}&uploadId={3}&dataTypeId={4}",
+                setting.WorkspaceId, numOfBlocks, blockId, uploadId, fileFormat);
+            var httpResult = await _httpClientService.HttpPostFile(queryUrl, fileName);
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+
+            return httpResult.Payload;
+        }
+
+        public string StartDatasetSchemaGen(WorkspaceSetting setting, string dataTypeId, string uploadFileId, string datasetName, string description, string uploadFileName)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            dynamic schemaJob = new
+            {
+                DataSource = new
+                {
+                    Name = datasetName,
+                    DataTypeId = dataTypeId,
+                    Description = description,
+                    FamilyId = string.Empty,
+                    Owner = "PowerShell",
+                    SourceOrigin = "FromResourceUpload"
+                },
+                UploadId = uploadFileId,
+                UploadedFromFileName = Path.GetFileName(uploadFileName),
+                ClientPoll = true
+            };
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/datasources", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpPost(queryUrl, JsonConvert.SerializeObject(schemaJob)).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var dataSourceId = httpResult.Payload.Replace("\"", "");
+
+            return dataSourceId;
+        }
+
+        public string GetDatasetSchemaGenStatus(WorkspaceSetting setting, string dataSourceId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/datasources/{1}", setting.WorkspaceId, dataSourceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            dynamic parsed = JsonConvert.DeserializeObject<object>(httpResult.Payload);
+            var schemaJobStatus = parsed["SchemaStatus"];
+
+            return schemaJobStatus;
         }
         #endregion
     }

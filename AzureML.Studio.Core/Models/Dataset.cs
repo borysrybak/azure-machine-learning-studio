@@ -2,10 +2,10 @@
 {
     public class Dataset : UserAsset
     {
-        public EndPoint VisualizeEndPoint { get; set; }
-        public EndPoint SchemaEndPoint { get; set; }
-        public EndPoint DownloadLocation { get; set; }
-        public string SchemaStatus { get; set; }
-        public string UploadedFromFileName { get; set; }
+        internal EndPoint VisualizeEndPoint { get; set; }
+        internal EndPoint SchemaEndPoint { get; set; }
+        internal EndPoint DownloadLocation { get; set; }
+        internal string SchemaStatus { get; set; }
+        internal string UploadedFromFileName { get; set; }
     }
 }

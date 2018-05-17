@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Enums
 {
-    public enum UserAssetType
+    internal enum UserAssetType
     {
         TrainedModel,
         Transform,

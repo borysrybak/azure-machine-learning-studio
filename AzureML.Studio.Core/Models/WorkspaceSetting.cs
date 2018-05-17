@@ -2,8 +2,8 @@
 {
     public class WorkspaceSetting
     {
-        public string WorkspaceId { get; set; }
-        public string AuthorizationToken { get; set; }
-        public string Location { get; set; }
+        internal string WorkspaceId { get; set; }
+        internal string AuthorizationToken { get; set; }
+        internal string Location { get; set; }
     }
 }

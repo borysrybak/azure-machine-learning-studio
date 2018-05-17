@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace AzureML.Studio.Core.Utils
 {
-    public static class ExtensionMethods
+    internal static class ExtensionMethods
     {
-        public static Task<HttpResponseMessage> PatchAsJsonAsync(this HttpClient client, string requestUri, string jsonBody)
+        internal static Task<HttpResponseMessage> PatchAsJsonAsync(this HttpClient client, string requestUri, string jsonBody)
         {
             var stringContent = new StringContent(jsonBody, Encoding.ASCII, "application/json");
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri) { Content = stringContent };

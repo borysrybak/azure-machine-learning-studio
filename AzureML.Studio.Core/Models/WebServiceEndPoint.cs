@@ -1,23 +1,23 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class WebServiceEndpoint
+    internal class WebServiceEndpoint
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string CreationTime { get; set; }
-        public string WebServiceId { get; set; }
-        public string WorkspaceId { get; set; }
-        public string HelpLocation { get; set; }
-        public string PrimaryKey { get; set; }
-        public string SecondaryKey { get; set; }
-        public string ApiLocation { get; set; }
-        public string Version { get; set; }
-        public bool PreventUpdate { get; set; }
-        public bool SampleDataEnabled { get; set; }
-        public string ExperimentLocation { get; set; }
-        public int MaxConcurrentCalls { get; set; }
-        public string DiagnosticsTraceLevel { get; set; }
-        public string ThrottleLevel { get; set; }
-        public Resource[] Resources { get; set; }
+        internal string Name { get; set; }
+        internal string Description { get; set; }
+        internal string CreationTime { get; set; }
+        internal string WebServiceId { get; set; }
+        internal string WorkspaceId { get; set; }
+        internal string HelpLocation { get; set; }
+        internal string PrimaryKey { get; set; }
+        internal string SecondaryKey { get; set; }
+        internal string ApiLocation { get; set; }
+        internal string Version { get; set; }
+        internal bool PreventUpdate { get; set; }
+        internal bool SampleDataEnabled { get; set; }
+        internal string ExperimentLocation { get; set; }
+        internal int MaxConcurrentCalls { get; set; }
+        internal string DiagnosticsTraceLevel { get; set; }
+        internal string ThrottleLevel { get; set; }
+        internal Resource[] Resources { get; set; }
     }
 }

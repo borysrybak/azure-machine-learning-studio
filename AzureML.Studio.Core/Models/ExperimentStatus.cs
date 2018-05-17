@@ -1,12 +1,12 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class ExperimentStatus
+    internal class ExperimentStatus
     {
-        public string StatusCode { get; set; }
-        public string StatusDetail { get; set; }
-        public string CreationTime { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
-        public string Metadata { get; set; }
+        internal string StatusCode { get; set; }
+        internal string StatusDetail { get; set; }
+        internal string CreationTime { get; set; }
+        internal string StartTime { get; set; }
+        internal string EndTime { get; set; }
+        internal string Metadata { get; set; }
     }
 }
