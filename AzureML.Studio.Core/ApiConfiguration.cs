@@ -2,7 +2,7 @@
 
 namespace AzureML.Studio.Core
 {
-    public static class ApiConfiguration
+    internal static class ApiConfiguration
     {
         private static ApiSettingsProfile _apiSettingsProfile;
 
@@ -12,7 +12,7 @@ namespace AzureML.Studio.Core
             SetDefaultConfiguration();
         }
 
-        public static void SetDefaultConfiguration()
+        internal static void SetDefaultConfiguration()
         {
             _apiSettingsProfile.Version = "0.3.4";
             _apiSettingsProfile.StudioApiBaseUrl = @"https://{0}studioapi.azureml{1}/api/";
@@ -24,12 +24,12 @@ namespace AzureML.Studio.Core
             _apiSettingsProfile.SdkName = "dotnetsdk_" + _apiSettingsProfile.Version;
         }
 
-        public static void SetConfiguration(ApiSettingsProfile apiSettingsProfile)
+        internal static void SetConfiguration(ApiSettingsProfile apiSettingsProfile)
         {
             _apiSettingsProfile = apiSettingsProfile;
         }
 
-        public static ApiSettingsProfile GetApiConfigurationSettings()
+        internal static ApiSettingsProfile GetApiConfigurationSettings()
         {
             return _apiSettingsProfile;
         }

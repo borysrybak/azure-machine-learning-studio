@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class PackingServiceActivity
+    internal class PackingServiceActivity
     {
         internal string Id { get; set; }
 

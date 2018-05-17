@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class Module
+    internal class Module
     {
         internal string Id { get; set; }
 

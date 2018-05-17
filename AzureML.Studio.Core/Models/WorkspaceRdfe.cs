@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class WorkspaceRdfe
+    internal class WorkspaceRdfe
     {
         internal string Id { get; set; }
 

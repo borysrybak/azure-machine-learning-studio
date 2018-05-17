@@ -14,23 +14,26 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using AzureML.Studio.Core.Enums;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("AzureML.Studio")]
 
 namespace AzureML.Studio.Core.Services
 {
-    public class ManagementService
+    internal class ManagementService
     {
         private ApiSettingsProfile _apiSettings;
         private readonly HttpClientService _httpClientService;
         private readonly JsonSerializer _jsonSerializer;
 
-        public ManagementService()
+        internal ManagementService()
         {
             _apiSettings = ApiConfiguration.GetApiConfigurationSettings();
             _httpClientService = new HttpClientService(_apiSettings.SdkName);
             _jsonSerializer = new JsonSerializer();
         }
 
-        public ManagementService(ApiSettingsProfile apiSettingsProfile) : this()
+        internal ManagementService(ApiSettingsProfile apiSettingsProfile) : this()
         {
             ApiConfiguration.SetConfiguration(apiSettingsProfile);
         }
@@ -333,7 +336,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Workspace
-        public WorkspaceRdfe[] GetWorkspacesFromRdfe(string managementCertThumbprint, string azureSubscriptionId)
+        internal WorkspaceRdfe[] GetWorkspacesFromRdfe(string managementCertThumbprint, string azureSubscriptionId)
         {
             var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl, azureSubscriptionId);
             var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "GET");
@@ -343,7 +346,7 @@ namespace AzureML.Studio.Core.Services
             return workspaces;
         }
 
-        public string CreateWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceName, string location, string storageAccountName, string storageAccountKey, string ownerEmail, string source)
+        internal string CreateWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceName, string location, string storageAccountName, string storageAccountKey, string ownerEmail, string source)
         {
             var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "/e582920d010646acbb0ec3183dc2243a", azureSubscriptionId);
             var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "PUT");
@@ -367,7 +370,7 @@ namespace AzureML.Studio.Core.Services
             return d["Id"];
         }
 
-        public WorkspaceRdfe GetCreateWorkspaceStatus(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
+        internal WorkspaceRdfe GetCreateWorkspaceStatus(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
         {
             var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "/{1}?Region={2}", azureSubscriptionId, workspaceId, HttpUtility.HtmlEncode(region));
             var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "GET");
@@ -377,7 +380,7 @@ namespace AzureML.Studio.Core.Services
             return workspace;
         }
 
-        public void RemoveWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
+        internal void RemoveWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
         {
             var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "{1}?Region={2}", azureSubscriptionId, workspaceId, HttpUtility.HtmlEncode(region));
             var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "DELETE");
@@ -389,7 +392,7 @@ namespace AzureML.Studio.Core.Services
             var result = UnicodeEncoding.ASCII.GetString(buffer);
         }
 
-        public Workspace GetWorkspaceFromAmlRP(WorkspaceSetting setting)
+        internal Workspace GetWorkspaceFromAmlRP(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -406,7 +409,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void AddWorkspaceUsers(WorkspaceSetting setting, string emails, string role)
+        internal void AddWorkspaceUsers(WorkspaceSetting setting, string emails, string role)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -424,7 +427,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public WorkspaceUser[] GetWorkspaceUsers(WorkspaceSetting setting)
+        internal WorkspaceUser[] GetWorkspaceUsers(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -448,7 +451,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Dataset
-        public Dataset[] GetDataset(WorkspaceSetting setting)
+        internal Dataset[] GetDataset(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -463,7 +466,7 @@ namespace AzureML.Studio.Core.Services
             return datasets;
         }
 
-        public void DeleteDataset(WorkspaceSetting setting, string datasetFamilyId)
+        internal void DeleteDataset(WorkspaceSetting setting, string datasetFamilyId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -475,7 +478,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void DownloadDatasetAsync(WorkspaceSetting setting, string datasetId, string filename)
+        internal void DownloadDatasetAsync(WorkspaceSetting setting, string datasetId, string filename)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -490,7 +493,7 @@ namespace AzureML.Studio.Core.Services
             DownloadFileAsync(downloadUrl, filename);
         }
 
-        public async Task<string> UploadResourceAsync(WorkspaceSetting setting, string fileFormat, string fileName)
+        internal async Task<string> UploadResourceAsync(WorkspaceSetting setting, string fileFormat, string fileName)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -504,7 +507,7 @@ namespace AzureML.Studio.Core.Services
             return httpResult.Payload;
         }
 
-        public string UploadResource(WorkspaceSetting setting, string fileFormat)
+        internal string UploadResource(WorkspaceSetting setting, string fileFormat)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -518,7 +521,7 @@ namespace AzureML.Studio.Core.Services
             return httpResult.Payload;
         }
 
-        public async Task<string> UploadResourceInChunksAsnyc(WorkspaceSetting setting, int numOfBlocks, int blockId, string uploadId, string fileName, string fileFormat)
+        internal async Task<string> UploadResourceInChunksAsnyc(WorkspaceSetting setting, int numOfBlocks, int blockId, string uploadId, string fileName, string fileFormat)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -533,7 +536,7 @@ namespace AzureML.Studio.Core.Services
             return httpResult.Payload;
         }
 
-        public string StartDatasetSchemaGen(WorkspaceSetting setting, string dataTypeId, string uploadFileId, string datasetName, string description, string uploadFileName)
+        internal string StartDatasetSchemaGen(WorkspaceSetting setting, string dataTypeId, string uploadFileId, string datasetName, string description, string uploadFileName)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -563,7 +566,7 @@ namespace AzureML.Studio.Core.Services
             return dataSourceId;
         }
 
-        public string GetDatasetSchemaGenStatus(WorkspaceSetting setting, string dataSourceId)
+        internal string GetDatasetSchemaGenStatus(WorkspaceSetting setting, string dataSourceId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -581,7 +584,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Custom Module
-        public string BeginParseCustomModuleJob(WorkspaceSetting setting, string moduleUploadMetadata)
+        internal string BeginParseCustomModuleJob(WorkspaceSetting setting, string moduleUploadMetadata)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -596,7 +599,7 @@ namespace AzureML.Studio.Core.Services
             return activityId;
         }
 
-        public string GetCustomModuleBuildJobStatus(WorkspaceSetting setting, string activityGroupId)
+        internal string GetCustomModuleBuildJobStatus(WorkspaceSetting setting, string activityGroupId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -611,7 +614,7 @@ namespace AzureML.Studio.Core.Services
             return jobStatus;
         }
 
-        public Module[] GetModules(WorkspaceSetting setting)
+        internal Module[] GetModules(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -627,7 +630,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Experiment
-        public Experiment[] GetExperiments(WorkspaceSetting setting)
+        internal Experiment[] GetExperiments(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -645,7 +648,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public Experiment GetExperimentById(WorkspaceSetting setting, string experimentId, out string rawJson)
+        internal Experiment GetExperimentById(WorkspaceSetting setting, string experimentId, out string rawJson)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -664,22 +667,22 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void RunExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
+        internal void RunExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
         {
             SubmitExperiment(setting, exp, rawJson, string.Empty, false, true);
         }
 
-        public void SaveExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
+        internal void SaveExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
         {
             SubmitExperiment(setting, exp, rawJson, string.Empty, false, false);
         }
 
-        public void SaveExperimentAs(WorkspaceSetting setting, Experiment exp, string rawJson, string newName)
+        internal void SaveExperimentAs(WorkspaceSetting setting, Experiment exp, string rawJson, string newName)
         {
             SubmitExperiment(setting, exp, rawJson, newName, true, false);
         }
 
-        public void RemoveExperimentById(WorkspaceSetting setting, string ExperimentId)
+        internal void RemoveExperimentById(WorkspaceSetting setting, string ExperimentId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -691,7 +694,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public PackingServiceActivity PackExperiment(WorkspaceSetting setting, string experimentId)
+        internal PackingServiceActivity PackExperiment(WorkspaceSetting setting, string experimentId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -708,7 +711,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public PackingServiceActivity GetActivityStatus(WorkspaceSetting setting, string activityId, bool isPacking)
+        internal PackingServiceActivity GetActivityStatus(WorkspaceSetting setting, string activityId, bool isPacking)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -725,7 +728,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public PackingServiceActivity UnpackExperiment(WorkspaceSetting setting, string packedLocation, string sourceRegion)
+        internal PackingServiceActivity UnpackExperiment(WorkspaceSetting setting, string packedLocation, string sourceRegion)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -742,7 +745,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public PackingServiceActivity UnpackExperimentFromGallery(WorkspaceSetting setting, string packageUri, string galleryUrl, string entityId)
+        internal PackingServiceActivity UnpackExperimentFromGallery(WorkspaceSetting setting, string packageUri, string galleryUrl, string entityId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -760,7 +763,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public string ExportAmlWebServiceDefinitionFromExperiment(WorkspaceSetting setting, string experimentId)
+        internal string ExportAmlWebServiceDefinitionFromExperiment(WorkspaceSetting setting, string experimentId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -776,7 +779,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public string AutoLayoutGraph(string jsonGraph)
+        internal string AutoLayoutGraph(string jsonGraph)
         {
             var studioGraph = CreateStudioGraph(JsonConvert.DeserializeObject<object>(jsonGraph));
             var httpResult = _httpClientService.HttpPost(_apiSettings.GraphLayoutApi + "AutoLayout", JsonConvert.SerializeObject(studioGraph)).Result;
@@ -795,7 +798,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region User Assets
-        public UserAsset[] GetTrainedModels(WorkspaceSetting setting)
+        internal UserAsset[] GetTrainedModels(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -812,7 +815,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public UserAsset[] GetTransforms(WorkspaceSetting setting)
+        internal UserAsset[] GetTransforms(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -829,7 +832,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void PromoteUserAsset(WorkspaceSetting setting, string experimentId, string nodeId, string nodeOutputName, string assetName, string assetDescription, UserAssetType assetType, string familyId)
+        internal void PromoteUserAsset(WorkspaceSetting setting, string experimentId, string nodeId, string nodeOutputName, string assetName, string assetDescription, UserAssetType assetType, string familyId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -902,7 +905,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Web Service
-        public WebService[] GetWebServicesInWorkspace(WorkspaceSetting setting)
+        internal WebService[] GetWebServicesInWorkspace(WorkspaceSetting setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -919,7 +922,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public WebService GetWebServicesById(WorkspaceSetting setting, string webServiceId)
+        internal WebService GetWebServicesById(WorkspaceSetting setting, string webServiceId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -936,7 +939,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public WebServiceCreationStatus DeployWebServiceFromPredictiveExperiment(WorkspaceSetting setting, string predictiveExperimentId, bool updateExistingWebServiceDefaultEndpoint)
+        internal WebServiceCreationStatus DeployWebServiceFromPredictiveExperiment(WorkspaceSetting setting, string predictiveExperimentId, bool updateExistingWebServiceDefaultEndpoint)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -953,7 +956,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public WebServiceCreationStatus GetWebServiceCreationStatus(WorkspaceSetting setting, string activityId)
+        internal WebServiceCreationStatus GetWebServiceCreationStatus(WorkspaceSetting setting, string activityId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -970,7 +973,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void RemoveWebServiceById(WorkspaceSetting setting, string webServiceId)
+        internal void RemoveWebServiceById(WorkspaceSetting setting, string webServiceId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -984,7 +987,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Web Service Endpoint
-        public WebServiceEndpoint[] GetWebServiceEndpoints(WorkspaceSetting setting, string webServiceId)
+        internal WebServiceEndpoint[] GetWebServiceEndpoints(WorkspaceSetting setting, string webServiceId)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1001,7 +1004,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public WebServiceEndpoint GetWebServiceEndpointByName(WorkspaceSetting setting, string webServiceId, string endpointName)
+        internal WebServiceEndpoint GetWebServiceEndpointByName(WorkspaceSetting setting, string webServiceId, string endpointName)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1018,7 +1021,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void AddWebServiceEndpoint(WorkspaceSetting setting, AddWebServiceEndpointRequest request)
+        internal void AddWebServiceEndpoint(WorkspaceSetting setting, AddWebServiceEndpointRequest request)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1031,7 +1034,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public bool RefreshWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, bool overwriteResources)
+        internal bool RefreshWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, bool overwriteResources)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1050,7 +1053,7 @@ namespace AzureML.Studio.Core.Services
             return true;
         }
 
-        public void PatchWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, dynamic patchReq)
+        internal void PatchWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, dynamic patchReq)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1063,7 +1066,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public void RemoveWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName)
+        internal void RemoveWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
@@ -1077,7 +1080,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Invoke Web Service Endpoint
-        public string InvokeRequestResponseService(string PostRequestUrl, string apiKey, string input)
+        internal string InvokeRequestResponseService(string PostRequestUrl, string apiKey, string input)
         {
             _httpClientService.AuthorizationToken = apiKey;
             var httpResult = _httpClientService.HttpPost(PostRequestUrl, input).Result;
@@ -1091,7 +1094,7 @@ namespace AzureML.Studio.Core.Services
             }
         }
 
-        public string SubmitBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobConfig)
+        internal string SubmitBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobConfig)
         {
             _httpClientService.AuthorizationToken = apiKey;
             var httpResult = _httpClientService.HttpPost(submitJobRequestUrl, jobConfig).Result;
@@ -1105,7 +1108,7 @@ namespace AzureML.Studio.Core.Services
             return jobId;
         }
 
-        public void StartBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobId)
+        internal void StartBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobId)
         {
             _httpClientService.AuthorizationToken = apiKey;
             var startJobApiLocation = submitJobRequestUrl.Replace("jobs?api-version=2.0", "jobs/" + jobId + "/start?api-version=2.0");
@@ -1117,7 +1120,7 @@ namespace AzureML.Studio.Core.Services
 
         }
 
-        public string GetBatchExecutionServiceJobStatus(string submitJobRequestUrl, string apiKey, string jobId, out string results)
+        internal string GetBatchExecutionServiceJobStatus(string submitJobRequestUrl, string apiKey, string jobId, out string results)
         {
             _httpClientService.AuthorizationToken = apiKey;
             var getJobStatusApiLocation = submitJobRequestUrl.Replace("jobs?api-version=2.0", "jobs/" + jobId + "?api-version=2.0");

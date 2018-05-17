@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class WorkspaceUser
+    internal class WorkspaceUser
     {
         internal WorkspaceUser(WorkspaceUserInternal workspaceUserInternal)
         {

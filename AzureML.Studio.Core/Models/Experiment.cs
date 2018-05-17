@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class Experiment
+    internal class Experiment
     {
         internal string Id { get; set; }
 

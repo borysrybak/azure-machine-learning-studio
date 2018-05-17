@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class WebServiceEndpoint
+    internal class WebServiceEndpoint
     {
         internal string Name { get; set; }
         internal string Description { get; set; }

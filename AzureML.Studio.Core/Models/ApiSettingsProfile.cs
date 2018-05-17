@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    public class ApiSettingsProfile
+    internal class ApiSettingsProfile
     {
         internal string Version { get; set; }
         internal string StudioApiBaseUrl { get; set; }
