@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using AzureML.Studio.Core.Enums;
 
 namespace AzureML.Studio.Core.Services
 {
@@ -219,6 +220,116 @@ namespace AzureML.Studio.Core.Services
                 httpResult.PayloadStream.CopyTo(fileStream);
             }
         }
+
+        private void SubmitExperiment(WorkspaceSetting setting, Experiment experiment, string rawJson, string newName, bool createNewCopy, bool run)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var body = CreateSubmitExperimentRequest(experiment, rawJson, run, newName, createNewCopy);
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}", setting.WorkspaceId, createNewCopy ? string.Empty : experiment.Id);
+            var httpResult = _httpClientService.HttpPost(queryUrl, body).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        private void InsertNodesIntoGraph(dynamic dag, StudioGraph graph, string section)
+        {
+            var nodePositions = dag[section]["SerializedClientData"];
+            var nodes = ExtractNodesFromXml(nodePositions);
+            foreach (var nodeId in nodes)
+            {
+                graph.Nodes.Add(new StudioGraphNode
+                {
+                    Id = nodeId,
+                    Width = 300,
+                    Height = 100,
+                    UserData = nodeId
+                });
+            }
+        }
+
+        private StudioGraph CreateStudioGraph(dynamic dag)
+        {
+            var graph = new StudioGraph();
+            InsertNodesIntoGraph(dag, graph, "Graph");
+            InsertNodesIntoGraph(dag, graph, "WebService");
+            var datasetNodes = new Dictionary<string, string>();
+            foreach (var moduleNode in dag["Graph"]["ModuleNodes"])
+            {
+                string nodeId = moduleNode["Id"];
+                foreach (var inputPort in moduleNode["InputPortsInternal"])
+                {
+                    if (inputPort["DataSourceId"] != null && !datasetNodes.Keys.Contains(nodeId))
+                    {
+                        datasetNodes.Add(nodeId, inputPort["DataSourceId"].ToString());
+                    }
+                }
+            }
+
+            foreach (dynamic edge in dag["Graph"]["EdgesInternal"])
+            {
+                var sourceOutputPort = edge["SourceOutputPortId"].ToString();
+                var destinationInputPort = edge["DestinationInputPortId"].ToString();
+                var sourceNode = (sourceOutputPort.Split(':')[0]);
+                var destinationNode = (destinationInputPort.Split(':')[0]);
+                graph.Edges.Add(new StudioGraphEdge
+                {
+                    DestinationNode = graph.Nodes.Single(n => n.Id == destinationNode),
+                    SourceNode = graph.Nodes.Single(n => n.Id == sourceNode)
+                });
+            }
+
+            foreach (var nodeId in datasetNodes.Keys)
+            {
+                graph.Edges.Add(new StudioGraphEdge
+                {
+                    DestinationNode = graph.Nodes.Single(n => n.Id == nodeId),
+                    SourceNode = graph.Nodes.Single(n => n.Id == datasetNodes[nodeId])
+                }
+                );
+            }
+
+            if (dag["WebService"] != null)
+            {
+                if (dag["WebService"]["Inputs"] != null)
+                {
+                    foreach (var webServiceInput in dag["WebService"]["Inputs"])
+                    {
+                        if (webServiceInput["PortId"] != null)
+                        {
+                            var webSvcModuleId = webServiceInput["Id"].ToString();
+                            var connectedModuleId = webServiceInput["PortId"].ToString().Split(':')[0];
+                            graph.Edges.Add(new StudioGraphEdge
+                            {
+                                DestinationNode = graph.Nodes.Single(n => n.Id == connectedModuleId),
+                                SourceNode = graph.Nodes.Single(n => n.Id == webSvcModuleId)
+                            });
+                        }
+                    }
+                }
+
+                if (dag["WebService"]["Outputs"] != null)
+                {
+                    foreach (var webServiceOutput in dag["WebService"]["Outputs"])
+                    {
+                        if (webServiceOutput["PortId"] != null)
+                        {
+                            var webServiceModuleId = webServiceOutput["Id"].ToString();
+                            var connectedModuleId = webServiceOutput["PortId"].ToString().Split(':')[0];
+                            graph.Edges.Add(new StudioGraphEdge
+                            {
+                                DestinationNode = graph.Nodes.Single(n => n.Id == webServiceModuleId),
+                                SourceNode = graph.Nodes.Single(n => n.Id == connectedModuleId)
+                            });
+                        }
+                    }
+                }
+            }
+
+            return graph;
+        }
         #endregion
 
         #region Workspace
@@ -290,7 +401,9 @@ namespace AzureML.Studio.Core.Services
                 return workspace;
             }
             else
+            {
                 throw new AmlRestApiException(httpResult);
+            }
         }
 
         public void AddWorkspaceUsers(WorkspaceSetting setting, string emails, string role)
@@ -306,7 +419,9 @@ namespace AzureML.Studio.Core.Services
                 return;
             }
             else
+            {
                 throw new AmlRestApiException(httpResult);
+            }
         }
 
         public WorkspaceUser[] GetWorkspaceUsers(WorkspaceSetting setting)
@@ -326,7 +441,9 @@ namespace AzureML.Studio.Core.Services
                 return users.ToArray();
             }
             else
+            {
                 throw new AmlRestApiException(httpResult);
+            }
         }
         #endregion
 
@@ -460,6 +577,560 @@ namespace AzureML.Studio.Core.Services
             var schemaJobStatus = parsed["SchemaStatus"];
 
             return schemaJobStatus;
+        }
+        #endregion
+
+        #region Custom Module
+        public string BeginParseCustomModuleJob(WorkspaceSetting setting, string moduleUploadMetadata)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/modules/custom", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpPost(queryUrl, moduleUploadMetadata).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var activityId = httpResult.Payload.Replace("\"", "");
+
+            return activityId;
+        }
+
+        public string GetCustomModuleBuildJobStatus(WorkspaceSetting setting, string activityGroupId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/modules/custom?activityGroupId={1}", setting.WorkspaceId, activityGroupId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var jobStatus = httpResult.Payload;
+
+            return jobStatus;
+        }
+
+        public Module[] GetModules(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/modules", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+            var modules = JsonConvert.DeserializeObject<Module[]>(httpResult.Payload);
+            return modules;
+        }
+        #endregion
+
+        #region Experiment
+        public Experiment[] GetExperiments(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var experiments = JsonConvert.DeserializeObject<Experiment[]>(httpResult.Payload);
+                experiments = experiments.Where(e => e.Category == "user" || string.IsNullOrEmpty(e.Category)).ToArray();
+                return experiments;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public Experiment GetExperimentById(WorkspaceSetting setting, string experimentId, out string rawJson)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            rawJson = string.Empty;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}", setting.WorkspaceId, experimentId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                rawJson = httpResult.Payload;
+                var experiment = JsonConvert.DeserializeObject<Experiment>(httpResult.Payload);
+                return experiment;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void RunExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
+        {
+            SubmitExperiment(setting, exp, rawJson, string.Empty, false, true);
+        }
+
+        public void SaveExperiment(WorkspaceSetting setting, Experiment exp, string rawJson)
+        {
+            SubmitExperiment(setting, exp, rawJson, string.Empty, false, false);
+        }
+
+        public void SaveExperimentAs(WorkspaceSetting setting, Experiment exp, string rawJson, string newName)
+        {
+            SubmitExperiment(setting, exp, rawJson, newName, true, false);
+        }
+
+        public void RemoveExperimentById(WorkspaceSetting setting, string ExperimentId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}?deleteAncestors=true", setting.WorkspaceId, ExperimentId);
+            var httpResult = _httpClientService.HttpDelete(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public PackingServiceActivity PackExperiment(WorkspaceSetting setting, string experimentId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/packages?api-version=2.0&experimentid={1}/&clearCredentials=true&includeAuthorId=false", setting.WorkspaceId, experimentId);
+            var httpResult = _httpClientService.HttpPost(queryUrl, string.Empty).Result;
+            if (httpResult.IsSuccess)
+            {
+                var activity = JsonConvert.DeserializeObject<PackingServiceActivity>(httpResult.Payload);
+                return activity;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public PackingServiceActivity GetActivityStatus(WorkspaceSetting setting, string activityId, bool isPacking)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/packages?{1}ActivityId={2}", setting.WorkspaceId, (isPacking ? "package" : "unpack"), activityId);
+            var httpResult = _httpClientService.HttpGet(queryUrl, true).Result;
+            if (httpResult.IsSuccess)
+            {
+                var activity = JsonConvert.DeserializeObject<PackingServiceActivity>(httpResult.Payload);
+                return activity;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public PackingServiceActivity UnpackExperiment(WorkspaceSetting setting, string packedLocation, string sourceRegion)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/packages?api-version=2.0&packageUri={1}{2}", setting.WorkspaceId, HttpUtility.UrlEncode(packedLocation), "&region=" + sourceRegion.Replace(" ", string.Empty));
+            var httpResult = _httpClientService.HttpPut(queryUrl, string.Empty).Result;
+            if (httpResult.IsSuccess)
+            {
+                var activity = JsonConvert.DeserializeObject<PackingServiceActivity>(httpResult.Payload);
+                return activity;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public PackingServiceActivity UnpackExperimentFromGallery(WorkspaceSetting setting, string packageUri, string galleryUrl, string entityId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/packages?api-version=2.0&packageUri={1}&communityUri={2}&entityId={3}", setting.WorkspaceId, HttpUtility.UrlEncode(packageUri), HttpUtility.UrlEncode(galleryUrl), entityId);
+            var httpResult = _httpClientService.HttpPut(setting.AuthorizationToken, queryUrl, string.Empty).Result;
+            if (httpResult.IsSuccess)
+            {
+                var activity = JsonConvert.DeserializeObject<PackingServiceActivity>(httpResult.Payload);
+                return activity;
+            }
+            else
+            {
+
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public string ExportAmlWebServiceDefinitionFromExperiment(WorkspaceSetting setting, string experimentId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}/webservicedefinition", setting.WorkspaceId, experimentId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                return httpResult.Payload;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public string AutoLayoutGraph(string jsonGraph)
+        {
+            var studioGraph = CreateStudioGraph(JsonConvert.DeserializeObject<object>(jsonGraph));
+            var httpResult = _httpClientService.HttpPost(_apiSettings.GraphLayoutApi + "AutoLayout", JsonConvert.SerializeObject(studioGraph)).Result;
+            if (httpResult.IsSuccess)
+            {
+                studioGraph = JsonConvert.DeserializeObject<StudioGraph>(httpResult.Payload);
+                var serializedGraph = JsonConvert.SerializeObject(studioGraph);
+                jsonGraph = UpdateNodesPositions(jsonGraph, studioGraph);
+                return jsonGraph;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+        #endregion
+
+        #region User Assets
+        public UserAsset[] GetTrainedModels(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/trainedmodels", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var trainedModels = JsonConvert.DeserializeObject<UserAsset[]>(httpResult.Payload);
+                return trainedModels;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public UserAsset[] GetTransforms(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/transformmodules", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var transformsModels = JsonConvert.DeserializeObject<UserAsset[]>(httpResult.Payload);
+                return transformsModels;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void PromoteUserAsset(WorkspaceSetting setting, string experimentId, string nodeId, string nodeOutputName, string assetName, string assetDescription, UserAssetType assetType, string familyId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/{1}", setting.WorkspaceId, assetType == UserAssetType.Transform ? "transformmodules" : (assetType == UserAssetType.TrainedModel ? "trainedmodels" : "datasources"));
+            var postPayloadInJson = string.Empty;
+            switch (assetType)
+            {
+                case UserAssetType.Transform:
+                    var transformPayload = new
+                    {
+                        ExperimentId = experimentId,
+                        ModuleNodeId = nodeId,
+                        OutputName = nodeOutputName,
+                        Transform = new
+                        {
+                            Name = assetName,
+                            DataTypeId = "iTransformDotNet",
+                            Description = assetDescription,
+                            SourceOrigin = "FromOutputPromotion",
+                            FamilyId = familyId
+                        }
+                    };
+                    postPayloadInJson = JsonConvert.SerializeObject(transformPayload);
+                    break;
+                case UserAssetType.TrainedModel:
+                    var trainedModelPayload = new
+                    {
+                        ExperimentId = experimentId,
+                        ModuleNodeId = nodeId,
+                        OutputName = nodeOutputName,
+                        TrainedModel = new
+                        {
+                            Name = assetName,
+                            DataTypeId = "iLearnerDotNet",
+                            Description = assetDescription,
+                            SourceOrigin = "FromOutputPromotion",
+                            FamilyId = familyId
+                        }
+                    };
+                    postPayloadInJson = JsonConvert.SerializeObject(trainedModelPayload);
+                    break;
+                case UserAssetType.Dataset:
+                    var datasetPayload = new
+                    {
+                        ExperimentId = experimentId,
+                        ModuleNodeId = nodeId,
+                        OutputName = nodeOutputName,
+                        DataSource = new
+                        {
+                            Name = assetName,
+                            DataTypeId = "Dataset",
+                            Description = assetDescription,
+                            SourceOrigin = "FromOutputPromotion",
+                            FamilyId = familyId
+                        }
+                    };
+                    postPayloadInJson = JsonConvert.SerializeObject(datasetPayload);
+                    break;
+            }
+            var httpResult = _httpClientService.HttpPost(queryUrl, postPayloadInJson).Result;
+            if (httpResult.IsSuccess)
+            {
+                return;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+        #endregion
+
+        #region Web Service
+        public WebService[] GetWebServicesInWorkspace(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var WorkspaceWebServices = JsonConvert.DeserializeObject<WebService[]>(httpResult.Payload);
+                return WorkspaceWebServices;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public WebService GetWebServicesById(WorkspaceSetting setting, string webServiceId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}", setting.WorkspaceId, webServiceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var webService = JsonConvert.DeserializeObject<WebService>(httpResult.Payload);
+                return webService;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public WebServiceCreationStatus DeployWebServiceFromPredictiveExperiment(WorkspaceSetting setting, string predictiveExperimentId, bool updateExistingWebServiceDefaultEndpoint)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}/webservice?generateNewPortNames=false{2}", setting.WorkspaceId, predictiveExperimentId, updateExistingWebServiceDefaultEndpoint ? "&updateExistingWebService=true" : "");
+            var httpResult = _httpClientService.HttpPost(queryUrl, string.Empty).Result;
+            if (httpResult.IsSuccess)
+            {
+                var status = JsonConvert.DeserializeObject<WebServiceCreationStatus>(httpResult.Payload);
+                return status;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public WebServiceCreationStatus GetWebServiceCreationStatus(WorkspaceSetting setting, string activityId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}/webservice", setting.WorkspaceId, activityId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var status = JsonConvert.DeserializeObject<WebServiceCreationStatus>(httpResult.Payload);
+                return status;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void RemoveWebServiceById(WorkspaceSetting setting, string webServiceId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}", setting.WorkspaceId, webServiceId);
+            var httpResult = _httpClientService.HttpDelete(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+        #endregion
+
+        #region Web Service Endpoint
+        public WebServiceEndpoint[] GetWebServiceEndpoints(WorkspaceSetting setting, string webServiceId)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints", setting.WorkspaceId, webServiceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var webServiceEndpoints = JsonConvert.DeserializeObject<WebServiceEndpoint[]>(httpResult.Payload);
+                return webServiceEndpoints;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public WebServiceEndpoint GetWebServiceEndpointByName(WorkspaceSetting setting, string webServiceId, string endpointName)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints/{2}", setting.WorkspaceId, webServiceId, endpointName);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var endpoint = JsonConvert.DeserializeObject<WebServiceEndpoint>(httpResult.Payload);
+                return endpoint;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void AddWebServiceEndpoint(WorkspaceSetting setting, AddWebServiceEndpointRequest request)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints/{2}", setting.WorkspaceId, request.WebServiceId, request.EndpointName);
+            var body = JsonConvert.SerializeObject(request);
+            var httpResult = _httpClientService.HttpPut(queryUrl, body).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public bool RefreshWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, bool overwriteResources)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints/{2}/refresh", setting.WorkspaceId, webServiceId, endpointName);
+            var body = "{\"OverwriteResources\": \"" + overwriteResources.ToString() + "\"}";
+            var httpResult = _httpClientService.HttpPost(queryUrl, body).Result;
+            if (httpResult.StatusCode == 304)
+            {
+                return false;
+            }
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+
+            return true;
+        }
+
+        public void PatchWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName, dynamic patchReq)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var body = JsonConvert.SerializeObject(patchReq);
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints/{2}", setting.WorkspaceId, webServiceId, endpointName);
+            var httpResult = _httpClientService.HttpPatch(queryUrl, body).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public void RemoveWebServiceEndpoint(WorkspaceSetting setting, string webServiceId, string endpointName)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.WebServiceApi + string.Format("workspaces/{0}/webservices/{1}/endpoints/{2}", setting.WorkspaceId, webServiceId, endpointName);
+            var httpResult = _httpClientService.HttpDelete(queryUrl).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+        #endregion
+
+        #region Invoke Web Service Endpoint
+        public string InvokeRequestResponseService(string PostRequestUrl, string apiKey, string input)
+        {
+            _httpClientService.AuthorizationToken = apiKey;
+            var httpResult = _httpClientService.HttpPost(PostRequestUrl, input).Result;
+            if (httpResult.IsSuccess)
+            {
+                return httpResult.Payload;
+            }
+            else
+            {
+                throw new AmlRestApiException(httpResult);
+            }
+        }
+
+        public string SubmitBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobConfig)
+        {
+            _httpClientService.AuthorizationToken = apiKey;
+            var httpResult = _httpClientService.HttpPost(submitJobRequestUrl, jobConfig).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new Exception(httpResult.Payload);
+            }
+
+            var jobId = httpResult.Payload.Replace("\"", "");
+
+            return jobId;
+        }
+
+        public void StartBatchExecutionServiceJob(string submitJobRequestUrl, string apiKey, string jobId)
+        {
+            _httpClientService.AuthorizationToken = apiKey;
+            var startJobApiLocation = submitJobRequestUrl.Replace("jobs?api-version=2.0", "jobs/" + jobId + "/start?api-version=2.0");
+            var httpResult = _httpClientService.HttpPost(startJobApiLocation, string.Empty).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new Exception(httpResult.Payload);
+            }
+
+        }
+
+        public string GetBatchExecutionServiceJobStatus(string submitJobRequestUrl, string apiKey, string jobId, out string results)
+        {
+            _httpClientService.AuthorizationToken = apiKey;
+            var getJobStatusApiLocation = submitJobRequestUrl.Replace("jobs?api-version=2.0", "jobs/" + jobId + "?api-version=2.0");
+            var httpResult = _httpClientService.HttpGet(getJobStatusApiLocation).Result;
+            if (!httpResult.IsSuccess)
+            {
+                throw new Exception(httpResult.Payload);
+            }
+            dynamic parsed = JsonConvert.DeserializeObject<object>(httpResult.Payload);
+            var jobStatus = parsed["StatusCode"];
+            results = httpResult.Payload;
+
+            return jobStatus;
         }
         #endregion
     }

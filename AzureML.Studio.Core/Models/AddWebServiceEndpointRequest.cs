@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class AddWebServiceEndpointRequest
+    public class AddWebServiceEndpointRequest
     {
         internal string WebServiceId { get; set; }
         internal string EndpointName { get; set; }

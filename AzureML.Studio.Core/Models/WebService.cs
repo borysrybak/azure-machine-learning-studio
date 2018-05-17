@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WebService
+    public class WebService
     {
         internal string Id { get; set; }
 
