@@ -1,4 +1,4 @@
-﻿namespace AzureML.Studio.Models.Enums
+﻿namespace AzureML.Studio.Core.Enums
 {
     public enum UserAssetType
     {

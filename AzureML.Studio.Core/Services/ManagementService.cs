@@ -1,13 +1,17 @@
-﻿using AzureML.Studio.Core;
+﻿using AzureML.Studio.Core.Exceptions;
+using AzureML.Studio.Core;
 using AzureML.Studio.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
 using System.Xml;
 
 namespace AzureML.Studio.Core.Services
@@ -184,6 +188,127 @@ namespace AzureML.Studio.Core.Services
             }
 
             return nodes;
+        }
+
+        private async Task<string> GetResultAsync(HttpWebRequest httpRequest)
+        {
+            var result = string.Empty;
+            using (var webResponse = await httpRequest.GetResponseAsync())
+            using (var streamReader = new StreamReader(webResponse.GetResponseStream()))
+            {
+                result = streamReader.ReadToEnd();
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Workspace
+        public WorkspaceRdfe[] GetWorkspacesFromRdfe(string managementCertThumbprint, string azureSubscriptionId)
+        {
+            var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl, azureSubscriptionId);
+            var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "GET");
+            var result = GetResultAsync(httpRequest).Result;
+            var workspaces = JsonConvert.DeserializeObject<WorkspaceRdfe[]>(result);
+
+            return workspaces;
+        }
+
+        public string CreateWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceName, string location, string storageAccountName, string storageAccountKey, string ownerEmail, string source)
+        {
+            var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "/e582920d010646acbb0ec3183dc2243a", azureSubscriptionId);
+            var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "PUT");
+            var payload = JsonConvert.SerializeObject(new
+            {
+                Name = workspaceName,
+                Region = location,
+                StorageAccountName = storageAccountName,
+                StorageAccountKey = storageAccountKey,
+                OwnerId = ownerEmail,
+                ImmediateActivation = true,
+                Source = source
+            });
+            httpRequest.ContentLength = payload.Length;
+            var stream = httpRequest.GetRequestStream();
+            var buffer = Encoding.UTF8.GetBytes(payload);
+            stream.Write(buffer, 0, buffer.Length);
+            var result = GetResultAsync(httpRequest).Result;
+            dynamic d = JsonConvert.DeserializeObject<object>(result);
+
+            return d["Id"];
+        }
+
+        public WorkspaceRdfe GetCreateWorkspaceStatus(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
+        {
+            var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "/{1}?Region={2}", azureSubscriptionId, workspaceId, HttpUtility.HtmlEncode(region));
+            var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "GET");
+            var result = GetResultAsync(httpRequest).Result;
+            var workspace = JsonConvert.DeserializeObject<WorkspaceRdfe>(result);
+
+            return workspace;
+        }
+
+        public void RemoveWorkspace(string managementCertThumbprint, string azureSubscriptionId, string workspaceId, string region)
+        {
+            var requestUrl = string.Format(_apiSettings.AzureManagementApiBaseUrl + "{1}?Region={2}", azureSubscriptionId, workspaceId, HttpUtility.HtmlEncode(region));
+            var httpRequest = GetRdfeHttpRequest(managementCertThumbprint, requestUrl, "DELETE");
+            var webResponse = httpRequest.GetResponse();
+            var contentLength = webResponse.ContentLength;
+            var buffer = new byte[contentLength];
+            webResponse.GetResponseStream().Read(buffer, 0, (int)contentLength);
+
+            var result = UnicodeEncoding.ASCII.GetString(buffer);
+        }
+
+        public Workspace GetWorkspaceFromAmlRP(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var workspace = JsonConvert.DeserializeObject<Workspace>(httpResult.Payload);
+                return workspace;
+            }
+            else
+                throw new AmlRestApiException(httpResult);
+        }
+
+        public void AddWorkspaceUsers(WorkspaceSetting setting, string emails, string role)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/invitations", setting.WorkspaceId);
+            var body = "{Role: \"" + role + "\", Emails:\"" + emails + "\"}";
+            var httpResult = _httpClientService.HttpPost(queryUrl, body).Result;
+            if (httpResult.IsSuccess)
+            {
+                var payload = httpResult.Payload;
+                return;
+            }
+            else
+                throw new AmlRestApiException(httpResult);
+        }
+
+        public WorkspaceUser[] GetWorkspaceUsers(WorkspaceSetting setting)
+        {
+            ValidateWorkspaceSetting(setting);
+            _httpClientService.AuthorizationToken = setting.AuthorizationToken;
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/users", setting.WorkspaceId);
+            var httpResult = _httpClientService.HttpGet(queryUrl).Result;
+            if (httpResult.IsSuccess)
+            {
+                var usersInternal = JsonConvert.DeserializeObject<WorkspaceUserInternal[]>(httpResult.Payload);
+                var users = new List<WorkspaceUser>();
+                foreach (WorkspaceUserInternal u in usersInternal)
+                {
+                    users.Add(new WorkspaceUser(u));
+                }
+                return users.ToArray();
+            }
+            else
+                throw new AmlRestApiException(httpResult);
         }
         #endregion
     }

@@ -1,7 +1,7 @@
 ﻿using AzureML.Studio.Core.Models;
 using System;
 
-namespace AzureML.Studio.Common.Exceptions
+namespace AzureML.Studio.Core.Exceptions
 {
     public class AmlRestApiException : Exception
     {
