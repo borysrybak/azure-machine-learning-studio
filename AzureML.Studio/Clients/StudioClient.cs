@@ -1,10 +1,8 @@
 ﻿using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
-using AzureML.Studio.Utils;
-using System;
+using AzureML.Studio.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace AzureML.Studio
 {
@@ -17,7 +15,7 @@ namespace AzureML.Studio
         /// </summary>
         public StudioClient()
         {
-            _managementService = new ManagementService();
+            _managementService = ManagementService.Instance;
         }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace AzureML.Studio
         /// <param name="role"></param>
         public void AddUserToWorkspace(WorkspaceSettings workspaceSettings, string email, string role)
         {
-            AddUserToWorkspace(workspaceSettings, new WorkspaceUser(new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } } ));
+            AddUserToWorkspace(workspaceSettings, new WorkspaceUser(new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } }));
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace AzureML.Studio
         {
             AddUserToSelectedWorkspaces(workspacesSettings, new WorkspaceUser(new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } }));
         }
-                
+
         /// <summary>
         /// Add new users to workspace.
         /// </summary>
@@ -159,7 +157,7 @@ namespace AzureML.Studio
         /// <param name="workspaceUsers"></param>
         public void AddUsersToWorkspace(WorkspaceSettings workspaceSettings, IEnumerable<WorkspaceUser> workspaceUsers)
         {
-            workspaceUsers.ForEach(w => AddUserToWorkspace(workspaceSettings, w));
+            workspaceUsers.ForEach(wu => AddUserToWorkspace(workspaceSettings, wu));
         }
 
         /// <summary>
