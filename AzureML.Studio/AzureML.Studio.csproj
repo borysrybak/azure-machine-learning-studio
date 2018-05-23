@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Microsoft</Company>
+    <Product>Azure Machine Learning Studio</Product>
+    <Authors>Borys Rybak</Authors>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
