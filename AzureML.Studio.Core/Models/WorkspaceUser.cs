@@ -1,7 +1,8 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WorkspaceUser
+    public class WorkspaceUser
     {
+        
         internal WorkspaceUser(WorkspaceUserInternal workspaceUserInternal)
         {
             Status = workspaceUserInternal.Status;
