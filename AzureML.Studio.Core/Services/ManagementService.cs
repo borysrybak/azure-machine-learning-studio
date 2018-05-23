@@ -1,5 +1,4 @@
 ﻿using AzureML.Studio.Core.Exceptions;
-using AzureML.Studio.Core;
 using AzureML.Studio.Core.Models;
 using Newtonsoft.Json;
 using System;
@@ -26,7 +25,16 @@ namespace AzureML.Studio.Core.Services
         private readonly HttpClientService _httpClientService;
         private readonly JsonSerializer _jsonSerializer;
 
-        internal ManagementService()
+        private static ManagementService _instance;
+        internal static ManagementService Instance
+        {
+            get
+            {
+                return _instance ?? (_instance = new ManagementService());
+            }
+        }
+
+        private ManagementService()
         {
             _apiSettings = ApiConfiguration.GetApiConfigurationSettings();
             _httpClientService = new HttpClientService(_apiSettings.SdkName);
