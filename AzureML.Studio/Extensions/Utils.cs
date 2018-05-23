@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AzureML.Studio.Utils
+namespace AzureML.Studio.Extensions
 {
-    public static class Extensions
+    public static class Utils
     {
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
