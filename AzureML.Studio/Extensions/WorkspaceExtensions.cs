@@ -63,5 +63,47 @@ namespace AzureML.Studio.Extensions
         {
             workspaceUsers.ForEach(wu => AddUser(workspace, wu));
         }
+
+        /// <summary>
+        /// Get datasets from workspace.
+        /// </summary>
+        /// <param name="workspace">Required parameter to get dataset from this parcticular workspace.</param>
+        /// <returns>Returns dataset collection.</returns>
+        public static IEnumerable<Dataset> GetDatasets(this Workspace workspace)
+        {
+            return _managementService.GetDataset(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            });
+        }
+
+        /// <summary>
+        /// Delete dataset from workspace
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetFamilyId"></param>
+        public static void DeleteDataset(this Workspace workspace, string datasetFamilyId)
+        {
+            _managementService.DeleteDataset(
+                 new WorkspaceSettings()
+                 {
+                     WorkspaceId = workspace.Id,
+                     AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                     Location = workspace.Region
+                 },
+                 datasetFamilyId);
+        }
+
+        /// <summary>
+        /// Delete datset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="dataset"></param>
+        public static void DeleteDataset(this Workspace workspace, Dataset dataset)
+        {
+            DeleteDataset(workspace, dataset.FamilyId);
+        }
     }
 }

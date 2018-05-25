@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class Dataset : UserAsset
+    public class Dataset : UserAsset
     {
         internal EndPoint VisualizeEndPoint { get; set; }
         internal EndPoint SchemaEndPoint { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class UserAsset : UserAssetBase
+    public class UserAsset : UserAssetBase
     {
         internal int Batch { get; set; }
         internal string ExperimentId { get; set; }

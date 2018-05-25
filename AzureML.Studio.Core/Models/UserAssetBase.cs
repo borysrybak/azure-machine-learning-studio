@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class UserAssetBase
+    public class UserAssetBase
     {
         internal string Id { get; set; }
 
