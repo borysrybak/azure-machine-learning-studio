@@ -97,7 +97,7 @@ namespace AzureML.Studio.Extensions
         }
 
         /// <summary>
-        /// Delete datset from workspace.
+        /// Delete dataset from workspace.
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="dataset"></param>
@@ -105,5 +105,35 @@ namespace AzureML.Studio.Extensions
         {
             DeleteDataset(workspace, dataset.FamilyId);
         }
+
+        /// <summary>
+        /// Delete datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetsFamilyIds"></param>
+        public static void DeleteDatasets(this Workspace workspace, IEnumerable<string> datasetsFamilyIds)
+        {
+            datasetsFamilyIds.ForEach(dfi => DeleteDataset(workspace, dfi));
+        }
+
+        /// <summary>
+        /// Delete datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasets"></param>
+        public static void DeleteDatasets(this Workspace workspace, IEnumerable<Dataset> datasets)
+        {
+            DeleteDatasets(workspace, datasets.Select(d => d.FamilyId));
+        }
+
+        /// <summary>
+        /// Delete all datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void DeleteAllDatasets(this Workspace workspace)
+        {
+            DeleteDatasets(workspace, GetDatasets(workspace));
+        }
+
     }
 }
