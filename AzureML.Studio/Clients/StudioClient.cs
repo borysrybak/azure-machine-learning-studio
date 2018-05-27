@@ -269,7 +269,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings">Required parameter to get desired dataset.</param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
-        public IEnumerable<Dataset> GetDatasetFromWorkspace(WorkspaceSettings workspaceSettings)
+        public IEnumerable<Dataset> GetDatasetsFromWorkspace(WorkspaceSettings workspaceSettings)
         {
             return _managementService.GetDataset(workspaceSettings);
         }
@@ -281,7 +281,7 @@ namespace AzureML.Studio
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
-        public IEnumerable<Dataset> GetDatasetFromWorkspace(string workspaceId, string authorizationToken, string location)
+        public IEnumerable<Dataset> GetDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location)
         {
             return _managementService.GetDataset(new WorkspaceSettings() { WorkspaceId = workspaceId, AuthorizationToken = authorizationToken, Location = location });
         }
@@ -291,9 +291,9 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspace">Required parameter to get desired dataset.<</param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
-        public IEnumerable<Dataset> GetDatasetFromWorkspace(Workspace workspace)
+        public IEnumerable<Dataset> GetDatasetsFromWorkspace(Workspace workspace)
         {
-            return GetDatasetFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+            return GetDatasetsFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
         }
 
         /// <summary>
@@ -301,9 +301,9 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
-        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetFromSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
-            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetDatasetFromWorkspace(ws));
+            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetDatasetsFromWorkspace(ws));
         }
 
         /// <summary>
@@ -311,9 +311,20 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
-        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetFromSelectedWorkspaces(IEnumerable<Workspace> workspaces)
+        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromSelectedWorkspaces(IEnumerable<Workspace> workspaces)
         {
-            return workspaces.ToDictionary(w => w, w => GetDatasetFromWorkspace(w));
+            return workspaces.ToDictionary(w => w, w => GetDatasetsFromWorkspace(w));
+        }
+
+
+        /// <summary>
+        /// Delete dataset from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="datasetFamilyId"></param>
+        public void DeleteDatasetFromWorkspace(WorkspaceSettings workspaceSettings, string datasetFamilyId)
+        {
+            _managementService.DeleteDataset(workspaceSettings, datasetFamilyId);
         }
 
         /// <summary>
@@ -323,7 +334,7 @@ namespace AzureML.Studio
         /// <param name="dataset"></param>
         public void DeleteDatasetFromWorkspace(WorkspaceSettings workspaceSettings, Dataset dataset)
         {
-            _managementService.DeleteDataset(workspaceSettings, dataset.FamilyId);
+            DeleteDatasetFromWorkspace(workspaceSettings, dataset.FamilyId);
         }
 
         /// <summary>
@@ -340,17 +351,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Delete dataset from workspace
-        /// </summary>
-        /// <param name="workspaceSettings"></param>
-        /// <param name="datasetFamilyId"></param>
-        public void DeleteDatasetFromWorkspace(WorkspaceSettings workspaceSettings, string datasetFamilyId)
-        {
-            _managementService.DeleteDataset(workspaceSettings, datasetFamilyId);
-        }
-
-        /// <summary>
-        /// Delete dataset from workspace
+        /// Delete dataset from workspace.
         /// </summary>
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
@@ -362,6 +363,110 @@ namespace AzureML.Studio
                 datasetFamilyId);
         }
 
+        /// <summary>
+        /// Delete dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetFamilyId"></param>
+        public void DeleteDatasetFromWorkspace(Workspace workspace, string datasetFamilyId)
+        {
+            DeleteDatasetFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, datasetFamilyId);
+        }
+
+        /// <summary>
+        /// Delete dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="dataset"></param>
+        public void DeleteDatasetFromWorkspace(Workspace workspace, Dataset dataset)
+        {
+            DeleteDatasetFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, dataset.FamilyId);
+        }
+
+
+        /// <summary>
+        /// Delete datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="datasets"></param>
+        public void DeleteDatasetsFromWorkspace(WorkspaceSettings workspaceSettings, IEnumerable<Dataset> datasets)
+        {
+            datasets.ForEach(d => DeleteDatasetFromWorkspace(workspaceSettings, d));
+        }
+
+        /// <summary>
+        /// Delete datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="datasets"></param>
+        public void DeleteDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location, IEnumerable<Dataset> datasets)
+        {
+            DeleteDatasetsFromWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, datasets);
+        }
+
+        /// <summary>
+        /// Delete datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasets"></param>
+        public void DeleteDatasetsFromWorkspace(Workspace workspace, IEnumerable<Dataset> datasets)
+        {
+            DeleteDatasetsFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, datasets);
+        }
+
+        /// <summary>
+        /// Delete all datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        public void DeleteAllDatasetsFromWorkspace(WorkspaceSettings workspaceSettings)
+        {
+            DeleteDatasetsFromWorkspace(workspaceSettings, GetDatasetsFromWorkspace(workspaceSettings));
+        }
+
+        /// <summary>
+        /// Delete all datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        public void DeleteAllDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location)
+        {
+            DeleteAllDatasetsFromWorkspace(new WorkspaceSettings() { WorkspaceId = workspaceId, AuthorizationToken = authorizationToken, Location = location });
+        }
+
+        /// <summary>
+        /// Delete all datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void DeleteAllDatasetsFromWorkspace(Workspace workspace)
+        {
+            DeleteAllDatasetsFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Delete all datasets from selected workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        public void DeleteAllDatasetsFromSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            workspacesSettings.ForEach(ws => DeleteAllDatasetsFromWorkspace(ws));
+        }
+
+        /// <summary>
+        /// Delete all datasets from selected workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public void DeleteAllDatasetsFromSelectedWorkspaces(IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => DeleteAllDatasetsFromWorkspace(w));
+        }
 
 
         #region Private Helpers
