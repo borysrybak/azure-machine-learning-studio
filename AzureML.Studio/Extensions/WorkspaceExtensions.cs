@@ -29,13 +29,20 @@ namespace AzureML.Studio.Extensions
         }
 
         /// <summary>
-        /// Get users from selected Azure Machine Learning Studio workspaces metadata.
+        /// Add new user to workspace.
         /// </summary>
-        /// <param name="workspaces">Required parameter to get users from specific workspace.</param>
-        /// <returns>Returns dictionary of workspaces and its workspace users.</returns>
-        public static IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetUsers(this IEnumerable<Workspace> workspaces)
+        /// <param name="workspace"></param>
+        /// <param name="email"></param>
+        /// <param name="role"></param>
+        public static void AddUser(this Workspace workspace, string email, string role)
         {
-            return workspaces.ToDictionary(w => w, w => GetUsers(w));
+            _managementService.AddWorkspaceUsers(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            },
+                email, role);
         }
 
         /// <summary>
@@ -45,13 +52,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="workspaceUser">Required parameter to add new user profile.</param>
         public static void AddUser(this Workspace workspace, WorkspaceUser workspaceUser)
         {
-            _managementService.AddWorkspaceUsers(new WorkspaceSettings()
-            {
-                WorkspaceId = workspace.Id,
-                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
-                Location = workspace.Region
-            },
-                workspaceUser.Email, workspaceUser.Role);
+            AddUser(workspace, workspaceUser.Email, workspaceUser.Role);
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace AzureML.Studio.Extensions
         /// <returns>Returns dataset collection.</returns>
         public static IEnumerable<Dataset> GetDatasets(this Workspace workspace)
         {
-            return _managementService.GetDataset(new WorkspaceSettings()
+            return _managementService.GetDatasets(new WorkspaceSettings()
             {
                 WorkspaceId = workspace.Id,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
@@ -133,6 +134,62 @@ namespace AzureML.Studio.Extensions
         public static void DeleteAllDatasets(this Workspace workspace)
         {
             DeleteDatasets(workspace, GetDatasets(workspace));
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetId"></param>
+        /// <param name="fileName"></param>
+        public static void DownloadDataset(this Workspace workspace, string datasetId, string fileName = "dataset")
+        {
+            _managementService.DownloadDatasetAsync(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, datasetId, $"{fileName}.{workspace.Id}.{datasetId}");
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="dataset"></param>
+        /// <param name="fileName"></param>
+        public static void DownloadDataset(this Workspace workspace, Dataset dataset, string fileName = "dataset")
+        {
+            DownloadDataset(workspace, dataset.Id, fileName);
+        }
+
+        /// <summary>
+        /// Download selected datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetsIds"></param>
+        public static void DownloadDatasets(this Workspace workspace, IEnumerable<string> datasetsIds)
+        {
+            datasetsIds.ForEach(di => DownloadDataset(workspace, di));
+        }
+
+        /// <summary>
+        /// Download selected datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasets"></param>
+        public static void DownloadDatasets(this Workspace workspace, IEnumerable<Dataset> datasets)
+        {
+            datasets.ForEach(d => DownloadDataset(workspace, d));
+        }
+
+        /// <summary>
+        /// Download all datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void DownloadAllDatasets(this Workspace workspace)
+        {
+            DownloadDatasets(workspace, GetDatasets(workspace));
         }
 
     }

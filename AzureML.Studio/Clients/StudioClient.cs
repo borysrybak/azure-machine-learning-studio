@@ -1,4 +1,5 @@
-﻿using AzureML.Studio.Core.Models;
+﻿using AzureML.Studio.Core.Enums;
+using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using AzureML.Studio.Extensions;
 using System.Collections.Generic;
@@ -271,7 +272,7 @@ namespace AzureML.Studio
         /// <returns>Returns dataset collection from particular workspace.</returns>
         public IEnumerable<Dataset> GetDatasetsFromWorkspace(WorkspaceSettings workspaceSettings)
         {
-            return _managementService.GetDataset(workspaceSettings);
+            return _managementService.GetDatasets(workspaceSettings);
         }
 
         /// <summary>
@@ -283,7 +284,7 @@ namespace AzureML.Studio
         /// <returns>Returns dataset collection from particular workspace.</returns>
         public IEnumerable<Dataset> GetDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location)
         {
-            return _managementService.GetDataset(new WorkspaceSettings() { WorkspaceId = workspaceId, AuthorizationToken = authorizationToken, Location = location });
+            return _managementService.GetDatasets(new WorkspaceSettings() { WorkspaceId = workspaceId, AuthorizationToken = authorizationToken, Location = location });
         }
 
         /// <summary>
@@ -468,6 +469,282 @@ namespace AzureML.Studio
             workspaces.ForEach(w => DeleteAllDatasetsFromWorkspace(w));
         }
 
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="datasetId"></param>
+        public void DownloadDatasetFromWorkspace(WorkspaceSettings workspaceSettings, string datasetId, string fileName = "dataset")
+        {
+            _managementService.DownloadDatasetAsync(workspaceSettings, datasetId, $"{fileName}.{workspaceSettings.WorkspaceId}.{datasetId}");
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="datasetId"></param>
+        public void DownloadDatasetFromWorkspace(string workspaceId, string authorizationToken, string location, string datasetId, string fileName = "dataset")
+        {
+            DownloadDatasetFromWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, datasetId, fileName);
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasetId"></param>
+        public void DownloadDatasetFromWorkspace(Workspace workspace, string datasetId, string fileName = "dataset")
+        {
+            DownloadDatasetFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, datasetId, fileName);
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="dataset"></param>
+        public void DownloadDatasetFromWorkspace(WorkspaceSettings workspaceSettings, Dataset dataset, string fileName = "dataset")
+        {
+            DownloadDatasetFromWorkspace(workspaceSettings, dataset.Id, fileName);
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="dataset"></param>
+        public void DownloadDatasetFromWorkspace(string workspaceId, string authorizationToken, string location, Dataset dataset, string fileName = "dataset")
+        {
+            DownloadDatasetFromWorkspace(workspaceId, authorizationToken, location, dataset.Id, fileName);
+        }
+
+        /// <summary>
+        /// Download dataset from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="dataset"></param>
+        public void DownloadDatasetFromWorkspace(Workspace workspace, Dataset dataset, string fileName = "dataset")
+        {
+            DownloadDatasetFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, dataset, fileName);
+        }
+
+        /// <summary>
+        /// Download selected datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="datasets"></param>
+        public void DownloadDatasetsFromWorkspace(WorkspaceSettings workspaceSettings, IEnumerable<Dataset> datasets)
+        {
+            datasets.ForEach(d => DownloadDatasetFromWorkspace(workspaceSettings, d));
+        }
+
+        /// <summary>
+        /// Download selected datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="datasets"></param>
+        public void DownloadDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location, IEnumerable<Dataset> datasets)
+        {
+            DownloadDatasetsFromWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, datasets);
+        }
+
+        /// <summary>
+        /// Download selected datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="datasets"></param>
+        public void DownloadDatasetsFromWorkspace(Workspace workspace, IEnumerable<Dataset> datasets)
+        {
+            DownloadDatasetsFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, datasets);
+        }
+
+        /// <summary>
+        /// Download all datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        public void DownloadAllDatasetsFromWorkspace(WorkspaceSettings workspaceSettings)
+        {
+            DownloadDatasetsFromWorkspace(workspaceSettings, GetDatasetsFromWorkspace(workspaceSettings));
+        }
+
+        /// <summary>
+        /// Download all datasets from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        public void DownloadAllDatasetsFromWorkspace(string workspaceId, string authorizationToken, string location)
+        {
+            DownloadAllDatasetsFromWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Download all datasets from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void DownloadAllDatasetsFromWorkspace(Workspace workspace)
+        {
+            DownloadAllDatasetsFromWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Download all datasets from selected workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        public void DownloadAllDatasetsFromWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            workspacesSettings.ForEach(ws => DownloadAllDatasetsFromWorkspace(ws));
+        }
+
+        /// <summary>
+        /// Download all datasets from selected workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public void DownloadAllDatasetsFromWorkspaces(IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => DownloadAllDatasetsFromWorkspace(w));
+        }
+
+        /// <summary>
+        /// Upload resource file to workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public async void UploadResourceToWorkspace(WorkspaceSettings workspaceSettings, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            await _managementService.UploadResourceAsync(workspaceSettings, resourceFileFormat.GetDescription(), filePath);
+        }
+
+        /// <summary>
+        /// Upload resource file to workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public void UploadResourceToWorkspace(string workspaceId, string authorizationToken, string location, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            UploadResourceToWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, resourceFileFormat, filePath);
+        }
+
+        /// <summary>
+        /// Upload resource file to workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public void UploadResourceToWorkspace(Workspace workspace, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            UploadResourceToWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, resourceFileFormat, filePath);
+        }
+
+        /// <summary>
+        /// Upload resource files to workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="resources"></param>
+        public void UploadResourcesToWorkspace(WorkspaceSettings workspaceSettings, IDictionary<string, ResourceFileFormat> resources)
+        {
+            resources.ForEach(pair => UploadResourceToWorkspace(workspaceSettings, pair.Value, pair.Key));
+        }
+
+        /// <summary>
+        /// Upload resource files to workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="resources"></param>
+        public void UploadResourcesToWorkspace(string workspaceId, string authorizationToken, string location, IDictionary<string, ResourceFileFormat> resources)
+        {
+            UploadResourcesToWorkspace(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, resources);
+        }
+
+        /// <summary>
+        /// Upload resource files to workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="resources"></param>
+        public void UploadResourcesToWorkspace(Workspace workspace, IDictionary<string, ResourceFileFormat> resources)
+        {
+            UploadResourcesToWorkspace(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, resources);
+        }
+
+        /// <summary>
+        /// Upload resource file to workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public void UploadResourceToWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            workspacesSettings.ForEach(ws => UploadResourceToWorkspace(ws, resourceFileFormat, filePath));
+        }
+
+        /// <summary>
+        /// Upload resource file to workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public void UploadResourceToWorkspaces(IEnumerable<Workspace> workspaces, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            workspaces.ForEach(w => UploadResourceToWorkspace(w, resourceFileFormat, filePath));
+        }
+
+        /// <summary>
+        /// Upload resource files to workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <param name="resources"></param>
+        public void UploadResourcesToWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, IDictionary<string, ResourceFileFormat> resources)
+        {
+            workspacesSettings.ForEach(ws => UploadResourcesToWorkspace(ws, resources));
+        }
+
+        /// <summary>
+        /// Upload resource files to workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="resources"></param>
+        public void UploadResourcesToWorkspaces(IEnumerable<Workspace> workspaces, IDictionary<string, ResourceFileFormat> resources)
+        {
+            workspaces.ForEach(w => UploadResourcesToWorkspace(w, resources));
+        }
 
         #region Private Helpers
 
