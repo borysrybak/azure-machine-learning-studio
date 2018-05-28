@@ -459,7 +459,7 @@ namespace AzureML.Studio.Core.Services
         #endregion
 
         #region Dataset
-        internal Dataset[] GetDataset(WorkspaceSettings setting)
+        internal Dataset[] GetDatasets(WorkspaceSettings setting)
         {
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
