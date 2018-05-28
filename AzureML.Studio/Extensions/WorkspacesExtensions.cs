@@ -1,4 +1,5 @@
-﻿using AzureML.Studio.Core.Models;
+﻿using AzureML.Studio.Core.Enums;
+using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,37 @@ namespace AzureML.Studio.Extensions
         public static void DownloadAllDatasets(this IEnumerable<Workspace> workspaces)
         {
             workspaces.ForEach(w => WorkspaceExtensions.DownloadAllDatasets(w));
+        }
+
+        /// <summary>
+        /// Upload resource to workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public static void UploadResource(this IEnumerable<Workspace> workspaces, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.UploadResource(w, resourceFileFormat, filePath));
+        }
+
+        /// <summary>
+        /// Upload resources to workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="resources"></param>
+        public static void UploadResources(this IEnumerable<Workspace> workspaces, IDictionary<string, ResourceFileFormat> resources)
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.UploadResources(w, resources));
+        }
+
+        /// <summary>
+        /// Get experiments dicitonary for specific workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
+        public static IDictionary<Workspace, IEnumerable<Experiment>> GetExperiments(this IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => WorkspaceExtensions.GetExperiments(w));
         }
     }
 }

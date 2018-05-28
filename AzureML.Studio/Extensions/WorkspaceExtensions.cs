@@ -1,4 +1,5 @@
-﻿using AzureML.Studio.Core.Models;
+﻿using AzureML.Studio.Core.Enums;
+using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -192,5 +193,62 @@ namespace AzureML.Studio.Extensions
             DownloadDatasets(workspace, GetDatasets(workspace));
         }
 
+        /// <summary>
+        /// Upload resource to workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="resourceFileFormat"></param>
+        /// <param name="filePath"></param>
+        public static async void UploadResource(this Workspace workspace, ResourceFileFormat resourceFileFormat, string filePath = "dataset")
+        {
+            await _managementService.UploadResourceAsync(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, resourceFileFormat.GetDescription(), filePath);
+        }
+
+        /// <summary>
+        /// Upload resources to workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="resources"></param>
+        public static void UploadResources(this Workspace workspace, IDictionary<string, ResourceFileFormat> resources)
+        {
+            resources.ForEach(pair => UploadResource(workspace, pair.Value, pair.Key));
+        }
+
+        /// <summary>
+        /// Get experiments from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public static IEnumerable<Experiment> GetExperiments(this Workspace workspace)
+        {
+            return _managementService.GetExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            });
+        }
+
+        /// <summary>
+        /// Get experiment by id.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <returns></returns>
+        public static Experiment GetExperimentById(this Workspace workspace, string experimentId)
+        {
+            var rawJson = string.Empty;
+            return _managementService.GetExperimentById(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, experimentId, out rawJson);
+        }
     }
 }

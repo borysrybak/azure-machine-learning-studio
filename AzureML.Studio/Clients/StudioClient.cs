@@ -746,6 +746,104 @@ namespace AzureML.Studio
             workspaces.ForEach(w => UploadResourcesToWorkspace(w, resources));
         }
 
+        /// <summary>
+        /// Get experiments from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetExperiments(WorkspaceSettings workspaceSettings)
+        {
+            return _managementService.GetExperiments(workspaceSettings);
+        }
+
+        /// <summary>
+        /// Get experiments from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetExperiments(string workspaceId, string authorizationToken, string location)
+        {
+            return GetExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Get experiments from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetExperiments(Workspace workspace)
+        {
+            return GetExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Get experiments from workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
+        public IDictionary<Workspace, IEnumerable<Experiment>> GetExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetExperiments(ws));
+        }
+
+        /// <summary>
+        /// Get experiments from workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
+        public IDictionary<Workspace, IEnumerable<Experiment>> GetExperiments(IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => GetExperiments(w));
+        }
+
+        /// <summary>
+        /// Get experiment by id.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <returns></returns>
+        public Experiment GetExperimentById(WorkspaceSettings workspaceSettings, string experimentId)
+        {
+            var rawJson = string.Empty;
+            return _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+        }
+
+        /// <summary>
+        /// Get experiment by id.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        /// <returns></returns>
+        public Experiment GetExperimentById(string workspaceId, string authorizationToken, string location, string experimentId)
+        {
+            return GetExperimentById(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId);
+        }
+
+        /// <summary>
+        /// Get experiment by id.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <returns></returns>
+        public Experiment GetExperimentById(Workspace workspace, string experimentId)
+        {
+            return GetExperimentById(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
+        }
+
         #region Private Helpers
 
         #endregion
