@@ -809,7 +809,7 @@ namespace AzureML.Studio
         /// <param name="workspaceSettings"></param>
         /// <param name="experimentId"></param>
         /// <returns></returns>
-        public Experiment GetExperimentById(WorkspaceSettings workspaceSettings, string experimentId)
+        public Experiment GetExperiment(WorkspaceSettings workspaceSettings, string experimentId)
         {
             var rawJson = string.Empty;
             return _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
@@ -823,9 +823,9 @@ namespace AzureML.Studio
         /// <param name="location"></param>
         /// <param name="experimentId"></param>
         /// <returns></returns>
-        public Experiment GetExperimentById(string workspaceId, string authorizationToken, string location, string experimentId)
+        public Experiment GetExperiment(string workspaceId, string authorizationToken, string location, string experimentId)
         {
-            return GetExperimentById(new WorkspaceSettings()
+            return GetExperiment(new WorkspaceSettings()
             {
                 WorkspaceId = workspaceId,
                 AuthorizationToken = authorizationToken,
@@ -839,10 +839,256 @@ namespace AzureML.Studio
         /// <param name="workspace"></param>
         /// <param name="experimentId"></param>
         /// <returns></returns>
-        public Experiment GetExperimentById(Workspace workspace, string experimentId)
+        public Experiment GetExperiment(Workspace workspace, string experimentId)
         {
-            return GetExperimentById(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
+            return GetExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
         }
+
+        /// <summary>
+        /// Get experiments by ids.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentsIds"></param>
+        /// <returns>Returns experiments collection.</returns>
+        public IEnumerable<Experiment> GetExperiments(WorkspaceSettings workspaceSettings, IEnumerable<string> experimentsIds)
+        {
+            return experimentsIds.Select(ei => GetExperiment(workspaceSettings, ei));
+        }
+
+        /// <summary>
+        /// Get experiments by ids.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentsIds"></param>
+        /// <returns>Returns experiments collection.</returns>
+        public IEnumerable<Experiment> GetExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<string> experimentsIds)
+        {
+            return GetExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentsIds);
+        }
+
+        /// <summary>
+        /// Get experiments by ids.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        /// <returns>Returns experiments collection.</returns>
+        public IEnumerable<Experiment> GetExperiments(Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            return GetExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
+        }
+
+        /// <summary>
+        /// Run Experiment.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        public void RunExperiment(WorkspaceSettings workspaceSettings, string experimentId)
+        {
+            var rawJson = string.Empty;
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            _managementService.RunExperiment(
+                workspaceSettings,
+                experiment,
+                rawJson);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        public void RunExperiment(string workspaceId, string authorizationToken, string location, string experimentId)
+        {
+            RunExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public void RunExperiment(Workspace workspace, string experimentId)
+        {
+            RunExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experiment"></param>
+        public void RunExperiment(WorkspaceSettings workspaceSettings, Experiment experiment)
+        {
+            var rawJson = string.Empty;
+            _managementService.GetExperimentById(workspaceSettings, experiment.Id, out rawJson);
+            _managementService.RunExperiment(
+                workspaceSettings,
+                experiment,
+                rawJson);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experiment"></param>
+        public void RunExperiment(string workspaceId, string authorizationToken, string location, Experiment experiment)
+        {
+            RunExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experiment);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public void RunExperiment(Workspace workspace, Experiment experiment)
+        {
+            RunExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experiment);
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentsIds"></param>
+        public void RunExperiments(WorkspaceSettings workspaceSettings, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => RunExperiment(workspaceSettings, ei));
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentsIds"></param>
+        public void RunExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<string> experimentsIds)
+        {
+            RunExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentsIds);
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public void RunExperiments(Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            RunExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experiments"></param>
+        public void RunExperiments(WorkspaceSettings workspaceSettings, IEnumerable<Experiment> experiments)
+        {
+            experiments.ForEach(e => RunExperiment(workspaceSettings, e));
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experiments"></param>
+        public void RunExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<Experiment> experiments)
+        {
+            RunExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experiments);
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public void RunExperiments(Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            RunExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experiments);
+        }
+
+        /// <summary>
+        /// Run all experiments.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        public void RunExperiments(WorkspaceSettings workspaceSettings)
+        {
+            RunExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+        }
+
+        /// <summary>
+        /// Run all experiments.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        public void RunExperiments(string workspaceId, string authorizationToken, string location)
+        {
+            RunExperiments(workspaceId, authorizationToken, location, GetExperiments(workspaceId, authorizationToken, location));
+        }
+
+        /// <summary>
+        /// Run all experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void RunExperiments(Workspace workspace)
+        {
+            RunExperiments(workspace, GetExperiments(workspace));
+        }
+
+        /// <summary>
+        /// Run all experiments in selected workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        public void RunExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            workspacesSettings.ForEach(ws => RunExperiments(ws));
+        }
+
+        /// <summary>
+        /// Run all experiments in selected workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public void RunExperiments(IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => RunExperiments(w));
+        }
+
 
         #region Private Helpers
 

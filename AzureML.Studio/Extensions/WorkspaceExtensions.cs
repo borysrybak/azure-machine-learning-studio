@@ -239,8 +239,8 @@ namespace AzureML.Studio.Extensions
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="experimentId"></param>
-        /// <returns></returns>
-        public static Experiment GetExperimentById(this Workspace workspace, string experimentId)
+        /// <returns>Returns experiment from workspace.</returns>
+        public static Experiment GetExperiment(this Workspace workspace, string experimentId)
         {
             var rawJson = string.Empty;
             return _managementService.GetExperimentById(new WorkspaceSettings()
@@ -249,6 +249,48 @@ namespace AzureML.Studio.Extensions
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, experimentId, out rawJson);
+        }
+
+        /// <summary>
+        /// Get experiments by ids.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public static IEnumerable<Experiment> GetExperiments(this Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            return experimentsIds.Select(ei => GetExperiment(workspace, ei));
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public static void RunExperiment(this Workspace workspace, string experimentId)
+        {
+            var rawJson = string.Empty;
+            var workspaceSettings = new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            };
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            _managementService.RunExperiment(
+                workspaceSettings,
+                experiment,
+                rawJson);
+        }
+
+        /// <summary>
+        /// Run experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public static void RunExperiment(this Workspace workspace, Experiment experiment)
+        {
+            RunExperiment(workspace, experiment.Id);
         }
     }
 }
