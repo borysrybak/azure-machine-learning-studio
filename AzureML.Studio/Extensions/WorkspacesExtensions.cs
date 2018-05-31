@@ -113,5 +113,32 @@ namespace AzureML.Studio.Extensions
         {
             return workspaces.ToDictionary(w => w, w => WorkspaceExtensions.GetExperiments(w));
         }
+
+        /// <summary>
+        /// Run all experiments.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public static void RunExperiments(this IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.RunExperiments(w));
+        }
+
+        /// <summary>
+        /// Save all experiments.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public static void SaveExperiments(this IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.SaveExperiments(w));
+        }
+
+        /// <summary>
+        /// Delete all experiments.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public static void DeleteExperiments(this IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.DeleteExperiments(w));
+        }
     }
 }

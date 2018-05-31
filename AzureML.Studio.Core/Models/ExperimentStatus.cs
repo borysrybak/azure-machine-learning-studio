@@ -1,6 +1,6 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class ExperimentStatus
+    public class ExperimentStatus
     {
         internal string StatusCode { get; set; }
         internal string StatusDetail { get; set; }

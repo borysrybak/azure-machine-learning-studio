@@ -292,5 +292,175 @@ namespace AzureML.Studio.Extensions
         {
             RunExperiment(workspace, experiment.Id);
         }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public static void RunExperiments(this Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => RunExperiment(workspace, ei));
+        }
+
+        /// <summary>
+        /// Run experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public static void RunExperiments(this Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            experiments.ForEach(e => RunExperiment(workspace, e));
+        }
+
+        /// <summary>
+        /// Run all experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void RunExperiments(this Workspace workspace)
+        {
+            RunExperiments(workspace, GetExperiments(workspace));
+        }
+
+        /// <summary>
+        /// Save experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public static void SaveExperiment(this Workspace workspace, string experimentId)
+        {
+            var rawJson = string.Empty;
+            var workspaceSettings = new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            };
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            _managementService.SaveExperiment(workspaceSettings, experiment, rawJson);
+        }
+
+        /// <summary>
+        /// Save experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public static void SaveExperiment(this Workspace workspace, Experiment experiment)
+        {
+            SaveExperiment(workspace, experiment.Id);
+        }
+
+        /// <summary>
+        /// Save experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public static void SaveExperiments(this Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => SaveExperiment(workspace, ei));
+        }
+
+        /// <summary>
+        /// Save experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public static void SaveExperiments(this Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            experiments.ForEach(e => SaveExperiment(workspace, e));
+        }
+
+        /// <summary>
+        /// Save all experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void SaveExperiments(this Workspace workspace)
+        {
+            SaveExperiments(workspace, GetExperiments(workspace));
+        }
+
+        /// <summary>
+        /// Save experiment as.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="newName"></param>
+        public static void SaveExperimentAs(this Workspace workspace, string experimentId, string newName)
+        {
+            var rawJson = string.Empty;
+            var workspaceSettings = new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            };
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            _managementService.SaveExperimentAs(workspaceSettings, experiment, rawJson, newName);
+        }
+
+        /// <summary>
+        /// Save experiment as.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        /// <param name="newName"></param>
+        public static void SaveExperimentAs(this Workspace workspace, Experiment experiment, string newName)
+        {
+            SaveExperimentAs(workspace, experiment.Id, newName);
+        }
+
+        /// <summary>
+        /// Delete experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public static void DeleteExperiment(this Workspace workspace, string experimentId)
+        {
+            _managementService.RemoveExperimentById(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, experimentId);
+        }
+
+        /// <summary>
+        /// Delete experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public static void DeleteExperiment(this Workspace workspace, Experiment experiment)
+        {
+            DeleteExperiment(workspace, experiment.Id);
+        }
+
+        /// <summary>
+        /// Delete experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public static void DeleteExperiments(this Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => DeleteExperiment(workspace, ei));
+        }
+
+        /// <summary>
+        /// Delete experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public static void DeleteExperiments(this Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            experiments.ForEach(e => DeleteExperiment(workspace, e));
+        }
+
+        /// <summary>
+        /// Delete all experiments.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void DeleteExperiments(this Workspace workspace)
+        {
+            DeleteExperiments(workspace, GetExperiments(workspace));
+        }
     }
 }

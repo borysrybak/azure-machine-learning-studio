@@ -9,7 +9,5 @@ namespace AzureML.Studio.Extensions
         {
             _managementService = ManagementService.Instance;
         }
-
-
     }
 }
