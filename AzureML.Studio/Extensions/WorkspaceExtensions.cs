@@ -462,5 +462,57 @@ namespace AzureML.Studio.Extensions
         {
             DeleteExperiments(workspace, GetExperiments(workspace));
         }
+
+        /// <summary>
+        /// Get trained model.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public static UserAsset GetTrainedModel(this Workspace workspace, string userAssetId)
+        {
+            return GetTrainedModels(workspace).First(tm => tm.Id.Equals(userAssetId));
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public static IEnumerable<UserAsset> GetTrainedModels(this Workspace workspace)
+        {
+            return _managementService.GetTrainedModels(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            });
+        }
+
+        /// <summary>
+        /// Get transform.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public static UserAsset GetTransform(this Workspace workspace, string userAssetId)
+        {
+            return GetTransforms(workspace).First(tm => tm.Id.Equals(userAssetId));
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public static IEnumerable<UserAsset> GetTransforms(this Workspace workspace)
+        {
+            return _managementService.GetTransforms(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            });
+        }
     }
 }

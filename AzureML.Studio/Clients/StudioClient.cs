@@ -1558,7 +1558,199 @@ namespace AzureML.Studio
             workspaces.ForEach(w => DeleteExperiments(w));
         }
 
+        /// <summary>
+        /// Get trained model.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns>Returns user asset.</returns>
+        public UserAsset GetTrainedModel(WorkspaceSettings workspaceSettings, string userAssetId)
+        {
+            return GetTrainedModels(workspaceSettings).First(tm => tm.Id.Equals(userAssetId));
+        }
 
+        /// <summary>
+        /// Get trained model.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public UserAsset GetTrainedModel(string workspaceId, string authorizationToken, string location, string userAssetId)
+        {
+            return GetTrainedModel(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, userAssetId);
+        }
+
+        /// <summary>
+        /// Get trained model.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public UserAsset GetTrainedModel(Workspace workspace, string userAssetId)
+        {
+            return GetTrainedModel(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, userAssetId);
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTrainedModels(WorkspaceSettings workspaceSettings)
+        {
+            return _managementService.GetTrainedModels(workspaceSettings);
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTrainedModels(string workspaceId, string authorizationToken, string location)
+        {
+            return GetTrainedModels(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTrainedModels(Workspace workspace)
+        {
+            return GetTrainedModels(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <returns></returns>
+        public IDictionary<Workspace, IEnumerable<UserAsset>> GetTrainedModels(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetTrainedModels(ws));
+        }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns></returns>
+        public IDictionary<Workspace, IEnumerable<UserAsset>> GetTrainedModels(IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => GetTrainedModels(w));
+        }
+
+        /// <summary>
+        /// Get transform.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public UserAsset GetTransform(WorkspaceSettings workspaceSettings, string userAssetId)
+        {
+            return GetTransforms(workspaceSettings).First(tm => tm.Id.Equals(userAssetId));
+        }
+
+        /// <summary>
+        /// Get transform.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public UserAsset GetTransform(string workspaceId, string authorizationToken, string location, string userAssetId)
+        {
+            return GetTransform(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, userAssetId);
+        }
+
+        /// <summary>
+        /// Get transform.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="userAssetId"></param>
+        /// <returns></returns>
+        public UserAsset GetTransform(Workspace workspace, string userAssetId)
+        {
+            return GetTransform(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, userAssetId);
+        }
+
+        /// <summary>
+        /// Get transform.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTransforms(WorkspaceSettings workspaceSettings)
+        {
+            return _managementService.GetTransforms(workspaceSettings);
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTransforms(string workspaceId, string authorizationToken, string location)
+        {
+            return GetTransforms(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public IEnumerable<UserAsset> GetTransforms(Workspace workspace)
+        {
+            return GetTransforms(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <returns></returns>
+        public IDictionary<Workspace, IEnumerable<UserAsset>> GetTransforms(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetTransforms(ws));
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns></returns>
+        public IDictionary<Workspace, IEnumerable<UserAsset>> GetTransforms(IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => GetTransforms(w));
+        }
 
         #region Private Helpers
 

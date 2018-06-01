@@ -140,5 +140,25 @@ namespace AzureML.Studio.Extensions
         {
             workspaces.ForEach(w => WorkspaceExtensions.DeleteExperiments(w));
         }
+
+        /// <summary>
+        /// Get trained models.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns></returns>
+        public static IDictionary<Workspace, IEnumerable<UserAsset>> GetTrainedModels(this IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => WorkspaceExtensions.GetTrainedModels(w));
+        }
+
+        /// <summary>
+        /// Get transforms.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns></returns>
+        public static IDictionary<Workspace, IEnumerable<UserAsset>> GetTransforms(this IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => WorkspaceExtensions.GetTransforms(w));
+        }
     }
 }
