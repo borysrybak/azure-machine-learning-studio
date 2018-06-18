@@ -3,7 +3,10 @@ using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using AzureML.Studio.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace AzureML.Studio
 {
@@ -46,7 +49,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings">Required parameter to get desired workspaces.</param>
         /// <returns>Returns collection of workspace objects.</returns>
-        public IEnumerable<Workspace> GetSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspaceSettings)
+        public IEnumerable<Workspace> GetWorkspaces(IEnumerable<WorkspaceSettings> workspaceSettings)
         {
             return workspaceSettings.Select(i => GetWorkspace(i));
         }
@@ -88,7 +91,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings">Required parameter to get users from specific workspace.</param>
         /// <returns>Returns dictionary of workspaces and its workspace users.</returns>
-        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetSelectedWorkspacesUsers(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspaceUsers(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
             return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetWorkspaceUsers(ws));
         }
@@ -98,7 +101,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces">Required parameter to get users from specific workspace.</param>
         /// <returns>Returns dictionary of workspaces and its workspace users.</returns>
-        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetSelectedWorkspacesUsers(IEnumerable<Workspace> workspaces)
+        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspaceUsers(IEnumerable<Workspace> workspaces)
         {
             return workspaces.ToDictionary(w => w, w => GetWorkspaceUser(w));
         }
@@ -179,7 +182,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="workspaceUser"></param>
-        public void AddUserToSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, WorkspaceUser workspaceUser)
+        public void AddUserToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, WorkspaceUser workspaceUser)
         {
             workspacesSettings.ForEach(ws => AddUserToWorkspace(ws, workspaceUser));
         }
@@ -190,9 +193,9 @@ namespace AzureML.Studio
         /// <param name="workspacesSettings"></param>
         /// <param name="email"></param>
         /// <param name="role"></param>
-        public void AddUserToSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, string email, string role)
+        public void AddUserToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, string email, string role)
         {
-            AddUserToSelectedWorkspaces(workspacesSettings, new WorkspaceUser(
+            AddUserToWorkspace(workspacesSettings, new WorkspaceUser(
                 new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } }));
         }
 
@@ -201,12 +204,12 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="workspaceUser"></param>
-        public void AddUserToSelectedWorkspaces(IEnumerable<Workspace> workspaces, WorkspaceUser workspaceUser)
+        public void AddUserToWorkspace(IEnumerable<Workspace> workspaces, WorkspaceUser workspaceUser)
         {
             workspaces.ForEach(w => AddUserToWorkspace(w, workspaceUser));
         }
 
-        public void AddUserToSelectedWorkspaces(IEnumerable<Workspace> workspaces, string email, string role)
+        public void AddUserToWorkspace(IEnumerable<Workspace> workspaces, string email, string role)
         {
             workspaces.ForEach(w => AddUserToWorkspace(w, new WorkspaceUser(
                 new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } })));
@@ -250,7 +253,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="workspaceUsers"></param>
-        public void AddUsersToSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, IEnumerable<WorkspaceUser> workspaceUsers)
+        public void AddUsersToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, IEnumerable<WorkspaceUser> workspaceUsers)
         {
             workspacesSettings.ForEach(ws => AddUsersToWorkspace(ws, workspaceUsers));
         }
@@ -260,7 +263,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="workspaceUsers"></param>
-        public void AddUsersToSelectedWorkspaces(IEnumerable<Workspace> workspaces, IEnumerable<WorkspaceUser> workspaceUsers)
+        public void AddUsersToWorkspace(IEnumerable<Workspace> workspaces, IEnumerable<WorkspaceUser> workspaceUsers)
         {
             workspaces.ForEach(w => AddUsersToWorkspace(w, workspaceUsers));
         }
@@ -302,7 +305,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
-        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
             return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetDatasetsFromWorkspace(ws));
         }
@@ -312,11 +315,26 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
-        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromSelectedWorkspaces(IEnumerable<Workspace> workspaces)
+        public IDictionary<Workspace, IEnumerable<Dataset>> GetDatasetsFromWorkspaces(IEnumerable<Workspace> workspaces)
         {
             return workspaces.ToDictionary(w => w, w => GetDatasetsFromWorkspace(w));
         }
 
+        //TODO: 
+        //public void PromoteDataset()
+        //{
+
+        //}
+
+        //public void PromoteTrainedModel()
+        //{
+
+        //}
+
+        //public void PromoteTransform()
+        //{
+
+        //}
 
         /// <summary>
         /// Delete dataset from workspace.
@@ -455,7 +473,7 @@ namespace AzureML.Studio
         /// Delete all datasets from selected workspaces.
         /// </summary>
         /// <param name="workspacesSettings"></param>
-        public void DeleteAllDatasetsFromSelectedWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public void DeleteAllDatasetsFromWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
             workspacesSettings.ForEach(ws => DeleteAllDatasetsFromWorkspace(ws));
         }
@@ -464,7 +482,7 @@ namespace AzureML.Studio
         /// Delete all datasets from selected workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
-        public void DeleteAllDatasetsFromSelectedWorkspaces(IEnumerable<Workspace> workspaces)
+        public void DeleteAllDatasetsFromWorkspaces(IEnumerable<Workspace> workspaces)
         {
             workspaces.ForEach(w => DeleteAllDatasetsFromWorkspace(w));
         }
@@ -1559,6 +1577,430 @@ namespace AzureML.Studio
         }
 
         /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        public void ExportExperiment(WorkspaceSettings workspaceSettings, string experimentId)
+        {
+            var rawJson = string.Empty;
+            var outputFile = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            File.WriteAllText(outputFile.Id, rawJson);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experiment"></param>
+        public void ExportExperiment(WorkspaceSettings workspaceSettings, Experiment experiment)
+        {
+            ExportExperiment(workspaceSettings, experiment.Id);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        public void ExportExperiment(string workspaceId, string authorizationToken, string location, string experimentId)
+        {
+            ExportExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experiment"></param>
+        public void ExportExperiment(string workspaceId, string authorizationToken, string location, Experiment experiment)
+        {
+            ExportExperiment(workspaceId, authorizationToken, location, experiment.Id);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public void ExportExperiment(Workspace workspace, string experimentId)
+        {
+            ExportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public void ExportExperiment(Workspace workspace, Experiment experiment)
+        {
+            ExportExperiment(workspace, experiment.Id);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(WorkspaceSettings workspaceSettings, string experimentId, string outputFile)
+        {
+            var rawJson = string.Empty;
+            _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+            File.WriteAllText(outputFile, rawJson);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experiment"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(WorkspaceSettings workspaceSettings, Experiment experiment, string outputFile)
+        {
+            ExportExperiment(workspaceSettings, experiment.Id, outputFile);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(string workspaceId, string authorizationToken, string location, string experimentId, string outputFile)
+        {
+            ExportExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId, outputFile);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experiment"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(string workspaceId, string authorizationToken, string location, Experiment experiment, string outputFile)
+        {
+            ExportExperiment(workspaceId, authorizationToken, location, experiment.Id, outputFile);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(Workspace workspace, string experimentId, string outputFile)
+        {
+            ExportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, outputFile);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        /// <param name="outputFile"></param>
+        public void ExportExperiment(Workspace workspace, Experiment experiment, string outputFile)
+        {
+            ExportExperiment(workspace, experiment.Id, outputFile);
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentsIds"></param>
+        public void ExportExperiments(WorkspaceSettings workspaceSettings, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => ExportExperiment(workspaceSettings, ei));
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experiments"></param>
+        public void ExportExperiments(WorkspaceSettings workspaceSettings, IEnumerable<Experiment> experiments)
+        {
+            ExportExperiments(workspaceSettings, experiments.Select(e => e.Id));
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentsIds"></param>
+        public void ExportExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<string> experimentsIds)
+        {
+            ExportExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentsIds);
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experiments"></param>
+        public void ExportExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<Experiment> experiments)
+        {
+            ExportExperiments(workspaceId, authorizationToken, location, experiments.Select(e => e.Id));
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public void ExportExperiments(Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            ExportExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public void ExportExperiments(Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            ExportExperiments(workspace, experiments.Select(e => e.Id));
+        }
+
+        /// <summary>
+        /// Export all experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        public void ExportExperiments(WorkspaceSettings workspaceSettings)
+        {
+            ExportExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+        }
+
+        /// <summary>
+        /// Export all experiments as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        public void ExportExperiments(string workspaceId, string authorizationToken, string location)
+        {
+            ExportExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Export all experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void ExportExperiments(Workspace workspace)
+        {
+            ExportExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+        }
+
+        /// <summary>
+        /// Import experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="inputFile"></param>
+        public void ImportExperiment(WorkspaceSettings workspaceSettings, string inputFile)
+        {
+            ImportExperimentProcess(workspaceSettings, inputFile);
+        }
+
+        /// <summary>
+        /// Import experiment as JSON to specific workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <param name="inputFile"></param>
+        public void ImportExperiment(IEnumerable<WorkspaceSettings> workspacesSettings, string inputFile)
+        {
+            workspacesSettings.ForEach(ws => ImportExperiment(ws, inputFile));
+        }
+
+        /// <summary>
+        /// Import experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="inputFile"></param>
+        public void ImportExperiment(string workspaceId, string authorizationToken, string location, string inputFile)
+        {
+            ImportExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, inputFile);
+        }
+
+        /// <summary>
+        /// Import experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="inputFile"></param>
+        public void ImportExperiment(Workspace workspace, string inputFile)
+        {
+            ImportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile);
+        }
+
+        /// <summary>
+        /// Import experiment as JSON to specific workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="inputFile"></param>
+        public void ImportExperiment(IEnumerable<Workspace> workspaces, string inputFile)
+        {
+            workspaces.ForEach(w => ImportExperiment(w, inputFile));
+        }
+
+        /// <summary>
+        /// Import new experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        public void ImportExperiment(WorkspaceSettings workspaceSettings, string inputFile, string newName)
+        {
+            ImportExperimentProcess(workspaceSettings, inputFile, newName);
+        }
+
+        /// <summary>
+        /// Import new experiment as JSON to specific workspaces. 
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        public void ImportExperiment(IEnumerable<WorkspaceSettings> workspacesSettings, string inputFile, string newName)
+        {
+            workspacesSettings.ForEach(ws => ImportExperiment(ws, inputFile, newName));
+        }
+
+        /// <summary>
+        /// Import new experiment as JSON.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        public void ImportExperiment(string workspaceId, string authorizationToken, string location, string inputFile, string newName)
+        {
+            ImportExperiment(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, inputFile, newName);
+        }
+
+        /// <summary>
+        /// Import new experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        public void ImportExperiment(Workspace workspace, string inputFile, string newName)
+        {
+            ImportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile, newName);
+        }
+
+        /// <summary>
+        /// Import new experiment as JSON to specific workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        public void ImportExperiment(IEnumerable<Workspace> workspaces, string inputFile, string newName)
+        {
+            workspaces.ForEach(w => ImportExperiment(w, inputFile, newName));
+        }
+
+        /// <summary>
+        /// Copy experiment from workspace to workspace.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        public void CopyExperiment(WorkspaceSettings sourceWorkspaceSettings, string experimentId, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            CopyExperimentProcess(sourceWorkspaceSettings, experimentId, destinationWorkspaceSettings);
+        }
+
+        /// <summary>
+        /// Copy experiment from workspace to workspace.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="experiment"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        public void CopyExperiment(WorkspaceSettings sourceWorkspaceSettings, Experiment experiment, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            CopyExperiment(sourceWorkspaceSettings, experiment.Id, destinationWorkspaceSettings);
+        }
+
+        /// <summary>
+        /// Copy specific experiments from workspace to workspace.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="experimentsIds"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        public void CopyExperiments(WorkspaceSettings sourceWorkspaceSettings, IEnumerable<string> experimentsIds, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            experimentsIds.ForEach(ei => CopyExperiment(sourceWorkspaceSettings, ei, destinationWorkspaceSettings));
+        }
+
+        /// <summary>
+        /// Copy specific experiments from workspace to workspace.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="experiments"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        public void CopyExperiments(WorkspaceSettings sourceWorkspaceSettings, IEnumerable<Experiment> experiments, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            experiments.ForEach(e => CopyExperiment(sourceWorkspaceSettings, e, destinationWorkspaceSettings));
+        }
+
+        /// <summary>
+        /// Copy all experiments from workspace to workspace.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        public void CopyExperiments(WorkspaceSettings sourceWorkspaceSettings, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            CopyExperiments(sourceWorkspaceSettings, GetExperiments(sourceWorkspaceSettings), destinationWorkspaceSettings);
+        }
+
+        /// <summary>
         /// Get trained model.
         /// </summary>
         /// <param name="workspaceSettings"></param>
@@ -1753,9 +2195,46 @@ namespace AzureML.Studio
         }
 
         #region Private Helpers
+        /// <summary>
+        /// Import Experiment as JSON process helper.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="newName"></param>
+        private void ImportExperimentProcess(WorkspaceSettings workspaceSettings, string inputFile, string newName = "default")
+        {
+            var rawJson = File.ReadAllText(inputFile);
+            var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(rawJson));
+            var serializer = new DataContractJsonSerializer(typeof(Experiment));
+            var experiment = (Experiment)serializer.ReadObject(memoryStream);
 
+            if (!newName.Equals("default")) _managementService.SaveExperimentAs(workspaceSettings, experiment, rawJson, newName);
+            else _managementService.SaveExperiment(workspaceSettings, experiment, rawJson);
+        }
+
+        /// <summary>
+        /// Copy experiment from workspace to workspace process helper.
+        /// </summary>
+        /// <param name="sourceWorkspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="destinationWorkspaceSettings"></param>
+        private void CopyExperimentProcess(WorkspaceSettings sourceWorkspaceSettings, string experimentId, WorkspaceSettings destinationWorkspaceSettings)
+        {
+            var rawJson = string.Empty;
+            var experiment = _managementService.GetExperimentById(sourceWorkspaceSettings, experimentId, out rawJson);
+
+            var activity = _managementService.PackExperiment(sourceWorkspaceSettings, experimentId);
+            while (activity.Status != "Complete")
+            {
+                activity = _managementService.GetActivityStatus(sourceWorkspaceSettings, activity.ActivityId, true);
+            }
+
+            activity = _managementService.UnpackExperiment(destinationWorkspaceSettings, activity.Location, destinationWorkspaceSettings.Location);
+            while (activity.Status != "Complete")
+            {
+                activity = _managementService.GetActivityStatus(destinationWorkspaceSettings, activity.ActivityId, false);
+            }
+        }
         #endregion
-
-
     }
 }

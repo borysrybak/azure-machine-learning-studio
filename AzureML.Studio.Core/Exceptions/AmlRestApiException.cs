@@ -3,8 +3,8 @@ using System;
 
 namespace AzureML.Studio.Core.Exceptions
 {
-    internal class AmlRestApiException : Exception
+    public class AmlRestApiException : Exception
     {
-        internal AmlRestApiException(HttpResult httpResult) : base("Error: [" + httpResult.StatusCode + " (" + httpResult.ReasonPhrase + ")]: " + httpResult.Payload) { }
+        public AmlRestApiException(HttpResult httpResult) : base("Error: [" + httpResult.StatusCode + " (" + httpResult.ReasonPhrase + ")]: " + httpResult.Payload) { }
     }
 }

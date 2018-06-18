@@ -1,9 +1,9 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class Resource
+    public class Resource
     {
-        internal string Name { get; set; }
-        internal string Kind { get; set; }
-        internal EndpointLocation Location { get; set; }
+        public string Name { get; set; }
+        public string Kind { get; set; }
+        public EndpointLocation Location { get; set; }
     }
 }

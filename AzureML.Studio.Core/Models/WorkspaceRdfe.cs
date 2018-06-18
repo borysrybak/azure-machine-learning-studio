@@ -1,17 +1,17 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WorkspaceRdfe
+    public class WorkspaceRdfe
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string Name { get; set; }
-        internal string SubscriptionId { get; set; }
-        internal string Region { get; set; }
-        internal string Description { get; set; }
-        internal string OwnerId { get; set; }
-        internal string StorageAccountName { get; set; }
-        internal string WorkspaceState { get; set; }
-        internal string EditorLink { get; set; }
-        internal AuthorizationToken AuthorizationToken { get; set; }
+        public string Name { get; set; }
+        public string SubscriptionId { get; set; }
+        public string Region { get; set; }
+        public string Description { get; set; }
+        public string OwnerId { get; set; }
+        public string StorageAccountName { get; set; }
+        public string WorkspaceState { get; set; }
+        public string EditorLink { get; set; }
+        public AuthorizationToken AuthorizationToken { get; set; }
     }
 }

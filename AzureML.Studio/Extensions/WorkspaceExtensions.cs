@@ -2,6 +2,7 @@
 using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace AzureML.Studio.Extensions
@@ -462,6 +463,102 @@ namespace AzureML.Studio.Extensions
         {
             DeleteExperiments(workspace, GetExperiments(workspace));
         }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        public static void ExportExperiment(this Workspace workspace, string experimentId)
+        {
+            var rawJson = string.Empty;
+            var outputFile = _managementService.GetExperimentById(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, experimentId, out rawJson);
+            File.WriteAllText(outputFile.Id, rawJson);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputFile"></param>
+        public static void ExportExperiment(this Workspace workspace, string experimentId, string outputFile)
+        {
+            var rawJson = string.Empty;
+            _managementService.GetExperimentById(new WorkspaceSettings()
+            {
+                WorkspaceId = workspace.Id,
+                AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
+                Location = workspace.Region
+            }, experimentId, out rawJson);
+            File.WriteAllText(outputFile, rawJson);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        public static void ExportExperiment(this Workspace workspace, Experiment experiment)
+        {
+            ExportExperiment(workspace, experiment.Id);
+        }
+
+        /// <summary>
+        /// Export experiment as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiment"></param>
+        /// <param name="outputFile"></param>
+        public static void ExportExperiment(this Workspace workspace, Experiment experiment, string outputFile)
+        {
+            ExportExperiment(workspace, experiment.Id, outputFile);
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentsIds"></param>
+        public static void ExportExperiments(this Workspace workspace, IEnumerable<string> experimentsIds)
+        {
+            experimentsIds.ForEach(ei => ExportExperiment(workspace, ei));
+        }
+
+        /// <summary>
+        /// Export specific experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experiments"></param>
+        public static void ExportExperiments(this Workspace workspace, IEnumerable<Experiment> experiments)
+        {
+            experiments.ForEach(e => ExportExperiment(workspace, e));
+        }
+
+        /// <summary>
+        /// Export all experiments as JSON.
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void ExportExperiments(this Workspace workspace)
+        {
+            ExportExperiments(workspace, GetExperiments(workspace));
+        }
+
+        //TODO:
+        //public static void ImportExperiment(this Workspace workspace, string inputFile)
+        //{
+
+        //}
+
+        //public static void ImportExperiment(this Workspace workspace, string inputFile, string newName)
+        //{
+
+        //}
 
         /// <summary>
         /// Get trained model.

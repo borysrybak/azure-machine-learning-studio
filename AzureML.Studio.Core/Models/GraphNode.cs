@@ -1,10 +1,10 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class GraphNode
+    public class GraphNode
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string ModuleId { get; set; }
-        internal string Comment { get; set; }
+        public string ModuleId { get; set; }
+        public string Comment { get; set; }
     }
 }

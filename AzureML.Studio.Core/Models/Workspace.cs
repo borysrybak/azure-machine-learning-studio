@@ -2,23 +2,23 @@
 {
     public class Workspace
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string FriendlyName { get; set; }
-        internal string Description { get; set; }
-        internal string HdInsightClusterConnectionString { get; set; }
-        internal string HdInsightStorageConnectionString { get; set; }
-        internal bool UseDefaultHdInsightSettings { get; set; }
-        internal AuthorizationToken AuthorizationToken { get; set; }
-        internal string MigrationStatus { get; set; }
-        internal string OwnerEmail { get; set; }
-        internal string UserStorage { get; set; }
-        internal string SubscriptionId { get; set; }
-        internal string SubscriptionName { get; set; }
-        internal string SubscriptionState { get; set; }
-        internal string Region { get; set; }
-        internal string WorkspaceStatus { get; set; }
-        internal string Type { get; set; }
-        internal string CreatedTime { get; set; }
+        public string FriendlyName { get; set; }
+        public string Description { get; set; }
+        public string HdInsightClusterConnectionString { get; set; }
+        public string HdInsightStorageConnectionString { get; set; }
+        public bool UseDefaultHdInsightSettings { get; set; }
+        public AuthorizationToken AuthorizationToken { get; set; }
+        public string MigrationStatus { get; set; }
+        public string OwnerEmail { get; set; }
+        public string UserStorage { get; set; }
+        public string SubscriptionId { get; set; }
+        public string SubscriptionName { get; set; }
+        public string SubscriptionState { get; set; }
+        public string Region { get; set; }
+        public string WorkspaceStatus { get; set; }
+        public string Type { get; set; }
+        public string CreatedTime { get; set; }
     }
 }

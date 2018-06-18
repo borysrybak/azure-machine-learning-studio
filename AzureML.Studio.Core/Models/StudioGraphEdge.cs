@@ -1,11 +1,11 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class StudioGraphEdge
+    public class StudioGraphEdge
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal StudioGraphNode SourceNode { get; set; }
-        internal StudioGraphNode DestinationNode { get; set; }
-        internal string UserData { get; set; }
+        public StudioGraphNode SourceNode { get; set; }
+        public StudioGraphNode DestinationNode { get; set; }
+        public string UserData { get; set; }
     }
 }

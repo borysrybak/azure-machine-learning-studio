@@ -1,12 +1,12 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class PackingServiceActivity
+    public class PackingServiceActivity
     {
-        internal string Id { get; set; }
+        public string ActivityId { get; set; }
 
-        internal string Location { get; set; }
-        internal int ItemsComplete { get; set; }
-        internal int ItemsPending { get; set; }
-        internal string Status { get; set; }
+        public string Location { get; set; }
+        public int ItemsComplete { get; set; }
+        public int ItemsPending { get; set; }
+        public string Status { get; set; }
     }
 }
