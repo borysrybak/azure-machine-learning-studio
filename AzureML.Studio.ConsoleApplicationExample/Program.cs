@@ -1,4 +1,4 @@
-﻿using AzureML.Studio.Extensions;
+﻿using AzureML.Studio.Core.Models;
 
 namespace AzureML.Studio.ConsoleApplicationExample
 {
@@ -7,15 +7,25 @@ namespace AzureML.Studio.ConsoleApplicationExample
         static void Main(string[] args)
         {
             var studioClient = new StudioClient();
-            var fakeWorkspace = studioClient.GetWorkspace("5378385d551e4011a444388fbf9290c4", "ulxHRR/5wVl1JZN8iADRHi0czGFzK5sV5T9JmALDcuU/WCo8NJOwA6e7bNRJyQvVm9quhIen5RdjhyxTmLx2eg==", "West Europe");
 
-            var fakeWorkspaceExperiments = fakeWorkspace.GetExperiments();
-            foreach (var exp in fakeWorkspaceExperiments)
+
+            var sWS = new WorkspaceSettings()
             {
-                fakeWorkspace.SaveExperimentAs(exp.ExperimentId, "New Name");
-            }
+                WorkspaceId = "x",
+                AuthorizationToken = "y",
+                Location = "z"
+            };
 
+            var experimentId = "x";
 
+            var dWS = new WorkspaceSettings()
+            {
+                WorkspaceId = "x",
+                AuthorizationToken = "y",
+                Location = "z"
+            };
+
+            studioClient.CopyExperiment(sWS, experimentId, dWS);
         }
     }
 }

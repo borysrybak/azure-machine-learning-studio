@@ -2,7 +2,7 @@
 {
     public class PackingServiceActivity
     {
-        public string Id { get; set; }
+        public string ActivityId { get; set; }
 
         public string Location { get; set; }
         public int ItemsComplete { get; set; }

@@ -142,6 +142,15 @@ namespace AzureML.Studio.Extensions
         }
 
         /// <summary>
+        /// Export all experiments as JSON.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        public static void ExportExperiments(this IEnumerable<Workspace> workspaces)
+        {
+            workspaces.ForEach(w => WorkspaceExtensions.ExportExperiments(w));
+        }
+
+        /// <summary>
         /// Get trained models.
         /// </summary>
         /// <param name="workspaces"></param>
