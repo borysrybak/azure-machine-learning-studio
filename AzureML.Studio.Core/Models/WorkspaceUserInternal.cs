@@ -1,8 +1,8 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WorkspaceUserInternal
+    public class WorkspaceUserInternal
     {
-        internal string Status { get; set; }
-        internal UserDetailInternal User { get; set; }
+        public string Status { get; set; }
+        public UserDetailInternal User { get; set; }
     }
 }

@@ -1,12 +1,12 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class AddWebServiceEndpointRequest
+    public class AddWebServiceEndpointRequest
     {
-        internal string WebServiceId { get; set; }
-        internal string EndpointName { get; set; }
-        internal string Description { get; set; }
-        internal string ThrottleLevel { get; set; }
-        internal int? MaxConcurrentCalls { get; set; }
-        internal bool PreventUpdate { get; set; }
+        public string WebServiceId { get; set; }
+        public string EndpointName { get; set; }
+        public string Description { get; set; }
+        public string ThrottleLevel { get; set; }
+        public int? MaxConcurrentCalls { get; set; }
+        public bool PreventUpdate { get; set; }
     }
 }

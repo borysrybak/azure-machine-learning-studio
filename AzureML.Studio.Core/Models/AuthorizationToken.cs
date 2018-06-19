@@ -1,8 +1,8 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class AuthorizationToken
+    public class AuthorizationToken
     {
-        internal string PrimaryToken { get; set; }
-        internal string SecondaryToken { get; set; }
+        public string PrimaryToken { get; set; }
+        public string SecondaryToken { get; set; }
     }
 }

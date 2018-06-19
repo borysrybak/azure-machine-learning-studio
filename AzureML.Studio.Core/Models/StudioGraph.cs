@@ -2,18 +2,18 @@
 
 namespace AzureML.Studio.Core.Models
 {
-    internal class StudioGraph
+    public class StudioGraph
     {
-        internal StudioGraph()
+        public StudioGraph()
         {
             Nodes = new List<StudioGraphNode>();
             Edges = new List<StudioGraphEdge>();
         }
 
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal List<StudioGraphNode> Nodes { get; set; }
-        internal List<StudioGraphEdge> Edges { get; set; }
-        internal string UserData { get; set; }
+        public List<StudioGraphNode> Nodes { get; set; }
+        public List<StudioGraphEdge> Edges { get; set; }
+        public string UserData { get; set; }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WebServiceCreationStatus
+    public class WebServiceCreationStatus
     {
-        internal string ActivityId { get; set; }
-        internal string WebServiceGroupId { get; set; }
-        internal string EndpointId { get; set; }
-        internal string Status { get; set; }
+        public string ActivityId { get; set; }
+        public string WebServiceGroupId { get; set; }
+        public string EndpointId { get; set; }
+        public string Status { get; set; }
     }
 }

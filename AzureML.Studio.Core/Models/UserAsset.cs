@@ -2,19 +2,19 @@
 {
     public class UserAsset : UserAssetBase
     {
-        internal int Batch { get; set; }
-        internal string ExperimentId { get; set; }
-        internal string Owner { get; set; }
-        internal string PromotedFrom { get; set; }
-        internal string ResourceUploadId { get; set; }
-        internal string SourceOrigin { get; set; }
-        internal TrainedModelLanguageMetadata Language { get; set; }
-        internal int Size { get; set; }
-        internal string CreatedDate { get; set; }
-        internal string ClientVersion { get; set; }
-        internal int ServiceVersion { get; set; }
-        internal string Category { get; set; }
-        internal bool IsDeprecated { get; set; }
-        internal string Description { get; set; }
+        public int Batch { get; set; }
+        public string ExperimentId { get; set; }
+        public string Owner { get; set; }
+        public string PromotedFrom { get; set; }
+        public string ResourceUploadId { get; set; }
+        public string SourceOrigin { get; set; }
+        public TrainedModelLanguageMetadata Language { get; set; }
+        public int Size { get; set; }
+        public string CreatedDate { get; set; }
+        public string ClientVersion { get; set; }
+        public int ServiceVersion { get; set; }
+        public string Category { get; set; }
+        public bool IsDeprecated { get; set; }
+        public string Description { get; set; }
     }
 }

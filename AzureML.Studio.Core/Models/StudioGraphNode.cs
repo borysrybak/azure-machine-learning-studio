@@ -1,13 +1,13 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class StudioGraphNode
+    public class StudioGraphNode
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal float CenterX { get; set; }
-        internal float CenterY { get; set; }
-        internal int Width { get; set; }
-        internal int Height { get; set; }
-        internal string UserData { get; set; }
+        public float CenterX { get; set; }
+        public float CenterY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string UserData { get; set; }
     }
 }

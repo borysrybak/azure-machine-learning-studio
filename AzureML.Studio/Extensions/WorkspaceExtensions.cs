@@ -23,7 +23,7 @@ namespace AzureML.Studio.Extensions
         {
             return _managementService.GetWorkspaceUsers(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             });
@@ -39,7 +39,7 @@ namespace AzureML.Studio.Extensions
         {
             _managementService.AddWorkspaceUsers(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             },
@@ -75,7 +75,7 @@ namespace AzureML.Studio.Extensions
         {
             return _managementService.GetDatasets(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             });
@@ -91,7 +91,7 @@ namespace AzureML.Studio.Extensions
             _managementService.DeleteDataset(
                  new WorkspaceSettings()
                  {
-                     WorkspaceId = workspace.Id,
+                     WorkspaceId = workspace.WorkspaceId,
                      AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                      Location = workspace.Region
                  },
@@ -147,10 +147,10 @@ namespace AzureML.Studio.Extensions
         {
             _managementService.DownloadDatasetAsync(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
-            }, datasetId, $"{fileName}.{workspace.Id}.{datasetId}");
+            }, datasetId, $"{fileName}.{workspace.WorkspaceId}.{datasetId}");
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace AzureML.Studio.Extensions
         {
             await _managementService.UploadResourceAsync(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, resourceFileFormat.GetDescription(), filePath);
@@ -228,7 +228,7 @@ namespace AzureML.Studio.Extensions
         {
             return _managementService.GetExperiments(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             });
@@ -245,7 +245,7 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             return _managementService.GetExperimentById(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, experimentId, out rawJson);
@@ -272,7 +272,7 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             var workspaceSettings = new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             };
@@ -290,7 +290,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="experiment"></param>
         public static void RunExperiment(this Workspace workspace, Experiment experiment)
         {
-            RunExperiment(workspace, experiment.Id);
+            RunExperiment(workspace, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             var workspaceSettings = new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             };
@@ -347,7 +347,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="experiment"></param>
         public static void SaveExperiment(this Workspace workspace, Experiment experiment)
         {
-            SaveExperiment(workspace, experiment.Id);
+            SaveExperiment(workspace, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -390,7 +390,7 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             var workspaceSettings = new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             };
@@ -406,7 +406,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="newName"></param>
         public static void SaveExperimentAs(this Workspace workspace, Experiment experiment, string newName)
         {
-            SaveExperimentAs(workspace, experiment.Id, newName);
+            SaveExperimentAs(workspace, experiment.ExperimentId, newName);
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace AzureML.Studio.Extensions
         {
             _managementService.RemoveExperimentById(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, experimentId);
@@ -431,7 +431,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="experiment"></param>
         public static void DeleteExperiment(this Workspace workspace, Experiment experiment)
         {
-            DeleteExperiment(workspace, experiment.Id);
+            DeleteExperiment(workspace, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace AzureML.Studio.Extensions
         {
             return _managementService.GetTrainedModels(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             });
@@ -509,7 +509,7 @@ namespace AzureML.Studio.Extensions
         {
             return _managementService.GetTransforms(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             });

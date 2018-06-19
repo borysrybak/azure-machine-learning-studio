@@ -3,7 +3,7 @@
     public class WorkspaceUser
     {
         
-        internal WorkspaceUser(WorkspaceUserInternal workspaceUserInternal)
+        public WorkspaceUser(WorkspaceUserInternal workspaceUserInternal)
         {
             Status = workspaceUserInternal.Status;
             Email = workspaceUserInternal.User.Email;
@@ -12,11 +12,11 @@
             Id = workspaceUserInternal.User.Id;
         }
 
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string Status { get; set; }
-        internal string Email { get; set; }
-        internal string Name { get; set; }
-        internal string Role { get; set; }
+        public string Status { get; set; }
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string Role { get; set; }
     }
 }

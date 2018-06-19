@@ -237,7 +237,7 @@ namespace AzureML.Studio.Core.Services
             ValidateWorkspaceSetting(setting);
             _httpClientService.AuthorizationToken = setting.AuthorizationToken;
             var body = CreateSubmitExperimentRequest(experiment, rawJson, run, newName, createNewCopy);
-            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}", setting.WorkspaceId, createNewCopy ? string.Empty : experiment.Id);
+            var queryUrl = _apiSettings.StudioApi + string.Format("workspaces/{0}/experiments/{1}", setting.WorkspaceId, createNewCopy ? string.Empty : experiment.ExperimentId);
             var httpResult = _httpClientService.HttpPost(queryUrl, body).Result;
             if (!httpResult.IsSuccess)
             {

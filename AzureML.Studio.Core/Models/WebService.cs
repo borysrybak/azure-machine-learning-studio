@@ -1,14 +1,14 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class WebService
+    public class WebService
     {
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string Name { get; set; }
-        internal string Description { get; set; }
-        internal string CreationTime { get; set; }
-        internal string WorkspaceId { get; set; }
-        internal string DefaultEndpointName { get; set; }
-        internal int EndpointCount { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string CreationTime { get; set; }
+        public string WorkspaceId { get; set; }
+        public string DefaultEndpointName { get; set; }
+        public int EndpointCount { get; set; }
     }
 }

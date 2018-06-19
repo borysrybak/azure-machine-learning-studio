@@ -1,9 +1,9 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class EndpointLocation
+    public class EndpointLocation
     {
-        internal string BaseLocation { get; set; }
-        internal string RelativeLocation { get; set; }
-        internal string SasBlobToken { get; set; }
+        public string BaseLocation { get; set; }
+        public string RelativeLocation { get; set; }
+        public string SasBlobToken { get; set; }
     }
 }

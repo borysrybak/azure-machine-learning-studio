@@ -1,8 +1,8 @@
 ﻿namespace AzureML.Studio.Core.Models
 {
-    internal class TrainedModelLanguageMetadata
+    public class TrainedModelLanguageMetadata
     {
-        internal string Language { get; set; }
-        internal string Version { get; set; }
+        public string Language { get; set; }
+        public string Version { get; set; }
     }
 }
