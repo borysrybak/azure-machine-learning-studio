@@ -1585,7 +1585,7 @@ namespace AzureML.Studio
         {
             var rawJson = string.Empty;
             var outputFile = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
-            File.WriteAllText(outputFile.Id, rawJson);
+            File.WriteAllText(outputFile.ExperimentId, rawJson);
         }
 
         /// <summary>
@@ -1595,7 +1595,7 @@ namespace AzureML.Studio
         /// <param name="experiment"></param>
         public void ExportExperiment(WorkspaceSettings workspaceSettings, Experiment experiment)
         {
-            ExportExperiment(workspaceSettings, experiment.Id);
+            ExportExperiment(workspaceSettings, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -1624,7 +1624,7 @@ namespace AzureML.Studio
         /// <param name="experiment"></param>
         public void ExportExperiment(string workspaceId, string authorizationToken, string location, Experiment experiment)
         {
-            ExportExperiment(workspaceId, authorizationToken, location, experiment.Id);
+            ExportExperiment(workspaceId, authorizationToken, location, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -1634,7 +1634,7 @@ namespace AzureML.Studio
         /// <param name="experimentId"></param>
         public void ExportExperiment(Workspace workspace, string experimentId)
         {
-            ExportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
+            ExportExperiment(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId);
         }
 
         /// <summary>
@@ -1644,7 +1644,7 @@ namespace AzureML.Studio
         /// <param name="experiment"></param>
         public void ExportExperiment(Workspace workspace, Experiment experiment)
         {
-            ExportExperiment(workspace, experiment.Id);
+            ExportExperiment(workspace, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -1668,7 +1668,7 @@ namespace AzureML.Studio
         /// <param name="outputFile"></param>
         public void ExportExperiment(WorkspaceSettings workspaceSettings, Experiment experiment, string outputFile)
         {
-            ExportExperiment(workspaceSettings, experiment.Id, outputFile);
+            ExportExperiment(workspaceSettings, experiment.ExperimentId, outputFile);
         }
 
         /// <summary>
@@ -1699,7 +1699,7 @@ namespace AzureML.Studio
         /// <param name="outputFile"></param>
         public void ExportExperiment(string workspaceId, string authorizationToken, string location, Experiment experiment, string outputFile)
         {
-            ExportExperiment(workspaceId, authorizationToken, location, experiment.Id, outputFile);
+            ExportExperiment(workspaceId, authorizationToken, location, experiment.ExperimentId, outputFile);
         }
 
         /// <summary>
@@ -1710,7 +1710,7 @@ namespace AzureML.Studio
         /// <param name="outputFile"></param>
         public void ExportExperiment(Workspace workspace, string experimentId, string outputFile)
         {
-            ExportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, outputFile);
+            ExportExperiment(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, outputFile);
         }
 
         /// <summary>
@@ -1721,7 +1721,7 @@ namespace AzureML.Studio
         /// <param name="outputFile"></param>
         public void ExportExperiment(Workspace workspace, Experiment experiment, string outputFile)
         {
-            ExportExperiment(workspace, experiment.Id, outputFile);
+            ExportExperiment(workspace, experiment.ExperimentId, outputFile);
         }
 
         /// <summary>
@@ -1741,7 +1741,7 @@ namespace AzureML.Studio
         /// <param name="experiments"></param>
         public void ExportExperiments(WorkspaceSettings workspaceSettings, IEnumerable<Experiment> experiments)
         {
-            ExportExperiments(workspaceSettings, experiments.Select(e => e.Id));
+            ExportExperiments(workspaceSettings, experiments.Select(e => e.ExperimentId));
         }
 
         /// <summary>
@@ -1770,7 +1770,7 @@ namespace AzureML.Studio
         /// <param name="experiments"></param>
         public void ExportExperiments(string workspaceId, string authorizationToken, string location, IEnumerable<Experiment> experiments)
         {
-            ExportExperiments(workspaceId, authorizationToken, location, experiments.Select(e => e.Id));
+            ExportExperiments(workspaceId, authorizationToken, location, experiments.Select(e => e.ExperimentId));
         }
 
         /// <summary>
@@ -1780,7 +1780,7 @@ namespace AzureML.Studio
         /// <param name="experimentsIds"></param>
         public void ExportExperiments(Workspace workspace, IEnumerable<string> experimentsIds)
         {
-            ExportExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
+            ExportExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
         }
 
         /// <summary>
@@ -1790,7 +1790,7 @@ namespace AzureML.Studio
         /// <param name="experiments"></param>
         public void ExportExperiments(Workspace workspace, IEnumerable<Experiment> experiments)
         {
-            ExportExperiments(workspace, experiments.Select(e => e.Id));
+            ExportExperiments(workspace, experiments.Select(e => e.ExperimentId));
         }
 
         /// <summary>
@@ -1824,7 +1824,7 @@ namespace AzureML.Studio
         /// <param name="workspace"></param>
         public void ExportExperiments(Workspace workspace)
         {
-            ExportExperiments(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+            ExportExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
         }
 
         /// <summary>
@@ -1871,7 +1871,7 @@ namespace AzureML.Studio
         /// <param name="inputFile"></param>
         public void ImportExperiment(Workspace workspace, string inputFile)
         {
-            ImportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile);
+            ImportExperiment(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile);
         }
 
         /// <summary>
@@ -1932,7 +1932,7 @@ namespace AzureML.Studio
         /// <param name="newName"></param>
         public void ImportExperiment(Workspace workspace, string inputFile, string newName)
         {
-            ImportExperiment(workspace.Id, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile, newName);
+            ImportExperiment(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, inputFile, newName);
         }
 
         /// <summary>
@@ -1965,7 +1965,7 @@ namespace AzureML.Studio
         /// <param name="destinationWorkspaceSettings"></param>
         public void CopyExperiment(WorkspaceSettings sourceWorkspaceSettings, Experiment experiment, WorkspaceSettings destinationWorkspaceSettings)
         {
-            CopyExperiment(sourceWorkspaceSettings, experiment.Id, destinationWorkspaceSettings);
+            CopyExperiment(sourceWorkspaceSettings, experiment.ExperimentId, destinationWorkspaceSettings);
         }
 
         /// <summary>
