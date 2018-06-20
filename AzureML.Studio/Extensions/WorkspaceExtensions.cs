@@ -474,11 +474,11 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             var outputFile = _managementService.GetExperimentById(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, experimentId, out rawJson);
-            File.WriteAllText(outputFile.Id, rawJson);
+            File.WriteAllText(outputFile.ExperimentId, rawJson);
         }
 
         /// <summary>
@@ -492,7 +492,7 @@ namespace AzureML.Studio.Extensions
             var rawJson = string.Empty;
             _managementService.GetExperimentById(new WorkspaceSettings()
             {
-                WorkspaceId = workspace.Id,
+                WorkspaceId = workspace.WorkspaceId,
                 AuthorizationToken = workspace.AuthorizationToken.PrimaryToken,
                 Location = workspace.Region
             }, experimentId, out rawJson);
@@ -506,7 +506,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="experiment"></param>
         public static void ExportExperiment(this Workspace workspace, Experiment experiment)
         {
-            ExportExperiment(workspace, experiment.Id);
+            ExportExperiment(workspace, experiment.ExperimentId);
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace AzureML.Studio.Extensions
         /// <param name="outputFile"></param>
         public static void ExportExperiment(this Workspace workspace, Experiment experiment, string outputFile)
         {
-            ExportExperiment(workspace, experiment.Id, outputFile);
+            ExportExperiment(workspace, experiment.ExperimentId, outputFile);
         }
 
         /// <summary>

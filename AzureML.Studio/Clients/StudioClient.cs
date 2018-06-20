@@ -209,6 +209,12 @@ namespace AzureML.Studio
             workspaces.ForEach(w => AddUserToWorkspace(w, workspaceUser));
         }
 
+        /// <summary>
+        /// Add new user to selected workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <param name="email"></param>
+        /// <param name="role"></param>
         public void AddUserToWorkspace(IEnumerable<Workspace> workspaces, string email, string role)
         {
             workspaces.ForEach(w => AddUserToWorkspace(w, new WorkspaceUser(
