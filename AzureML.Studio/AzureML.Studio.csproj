@@ -7,6 +7,12 @@
     <Authors>Borys Rybak</Authors>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>.NET Module for Azure Machine Learning Studio http://studio.azureml.net/</Description>
+    <PackageProjectUrl>https://github.com/borysrybak/AzureMachineLearningStudio</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/borysrybak/AzureMachineLearningStudio</RepositoryUrl>
+    <PackageTags></PackageTags>
+    <PackageReleaseNotes>v1.0-alpha</PackageReleaseNotes>
+    <PackageLicenseUrl>https://github.com/borysrybak/AzureMachineLearningStudio/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
