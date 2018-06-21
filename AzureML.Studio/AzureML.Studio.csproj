@@ -13,6 +13,7 @@
     <PackageTags></PackageTags>
     <PackageReleaseNotes>v1.0-alpha</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/borysrybak/AzureMachineLearningStudio/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageId>AzureML.Studio</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
