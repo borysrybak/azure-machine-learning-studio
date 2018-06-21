@@ -2,6 +2,7 @@
 using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using AzureML.Studio.Extensions;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -2200,6 +2201,51 @@ namespace AzureML.Studio
             return workspaces.ToDictionary(w => w, w => GetTransforms(w));
         }
 
+        /// <summary>
+        /// Modify node parameter by changing its value.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="nodeNameComment"></param>
+        /// <param name="nodeParameterName"></param>
+        /// <param name="value"></param>
+        public void ModifyNodeParameter(WorkspaceSettings workspaceSettings, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
+        {
+            ModifyNodeParameterProcess(workspaceSettings, experimentId, nodeNameComment, nodeParameterName, value, saveAs);
+        }
+
+        /// <summary>
+        /// Modify node parameter by changing its value.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nodeNameComment"></param>
+        /// <param name="nodeParameterName"></param>
+        /// <param name="value"></param>
+        public void ModifyNodeParameter(string workspaceId, string authorizationToken, string location, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
+        {
+            ModifyNodeParameter(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId, nodeNameComment, nodeParameterName, value, saveAs);
+        }
+
+        /// <summary>
+        /// Modify node parameter by changing its value.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nodeNameComment"></param>
+        /// <param name="nodeParameterName"></param>
+        /// <param name="value"></param>
+        public void ModifyNodeParameter(Workspace workspace, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
+        {
+            ModifyNodeParameter(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, nodeNameComment, nodeParameterName, value, saveAs);
+        }
+
         #region Private Helpers
         /// <summary>
         /// Import Experiment as JSON process helper.
@@ -2239,6 +2285,46 @@ namespace AzureML.Studio
             while (activity.Status != "Complete")
             {
                 activity = _managementService.GetActivityStatus(destinationWorkspaceSettings, activity.ActivityId, false);
+            }
+        }
+
+        /// <summary>
+        /// Process of modifying node parameter by chaning its value.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nodeNameComment"></param>
+        /// <param name="nodeNameParameter"></param>
+        /// <param name="value"></param>
+        private void ModifyNodeParameterProcess(WorkspaceSettings workspaceSettings, string experimentId, string nodeNameComment, string nodeNameParameter, string value, string saveAs = "")
+        {
+            var rawJson = string.Empty;
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+
+            dynamic jsonObject = JsonConvert.DeserializeObject<object>(rawJson);
+            foreach (var moduleNode in jsonObject["Graph"]["ModuleNodes"])
+            {
+                if (moduleNode["Comment"] == nodeNameComment)
+                {
+                    foreach (var moduleParameter in moduleNode["ModuleParameters"])
+                    {
+                        if(moduleParameter["Name"] == nodeNameParameter)
+                        {
+                            moduleParameter["Value"] = value;
+                        }
+                    }
+                }
+            }
+
+            var modifiedRawJson = JsonConvert.SerializeObject(jsonObject);
+
+            if(!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs))
+            {
+                _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Modified Parameter] " + saveAs);
+            }
+            else
+            {
+                _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
             }
         }
         #endregion

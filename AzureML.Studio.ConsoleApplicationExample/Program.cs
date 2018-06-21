@@ -6,14 +6,15 @@ namespace AzureML.Studio.ConsoleApplicationExample
     {
         static void Main(string[] args)
         {
-            var studioClient = new StudioClient();
+            //var studioClient = new StudioClient();
 
             //CopyExperimentFromWorkspaceToWorkspaceSamePricingSameRegion(studioClient);
             //CopyExperimentFromWorkspaceToWorkspaceDifferentPricingSameRegion(studioClient);
             //CopyExperimentFromWorkspaceToWorkspaceSamePricingDifferentRegion(studioClient);
             //CopyExperimentFromWorkspaceToWorkspaceDifferentPricingDifferentRegion(studioClient);
 
-            ModifyExperimentNodeAndSaveAsAnotherExperiment(studioClient);
+            //ModifyExperimentNodeAndOverwrite(studioClient);
+            //ModifyExperimentNodeAndSaveAsAnotherExperiment(studioClient);
         }
 
         /// <summary>
@@ -138,8 +139,48 @@ namespace AzureML.Studio.ConsoleApplicationExample
             studioClient.ImportExperiment(destinationWorkspace, inputFilePath, "Copied from other region");
         }
 
+        /// <summary>
+        /// Modify Experiment: 'Import Data - Experiment'
+        /// Modified Node Name: 'Import Data' //Found by comment "Import Data Comment"
+        /// Modified Parameter Name: 'Database Query'
+        /// </summary>
+        /// <param name="studioClient"></param>
+        static void ModifyExperimentNodeAndOverwrite(StudioClient studioClient)
+        {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = "West Europe"
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            studioClient.ModifyNodeParameter(workspace, experimentId, "Import Data Comment", "Database Query", "SELECT Name, ProductNumber, CAST(Weight AS float) Weight\r\nFROM SalesLT.Product");
+        }
+
+        /// <summary>
+        /// Modify Experiment: 'Import Data - Experiment'
+        /// Modified Node Name: 'Import Data' //Found by comment "Import Data Comment"
+        /// Modified Parameter Name: 'Database Query'
+        /// </summary>
+        /// <param name="studioClient"></param>
         static void ModifyExperimentNodeAndSaveAsAnotherExperiment(StudioClient studioClient)
         {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = "West Europe"
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            studioClient.ModifyNodeParameter(workspace, experimentId, "Import Data Comment", "Database Query", "SELECT Name, Color, CAST(Weight AS float) Weight\r\nFROM SalesLT.Product", "Import Data - Experiment 2");
         }
     }
 }
