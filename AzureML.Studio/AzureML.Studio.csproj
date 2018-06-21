@@ -6,6 +6,7 @@
     <Product>Azure Machine Learning Studio</Product>
     <Authors>Borys Rybak</Authors>
     <NeutralLanguage>en</NeutralLanguage>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
