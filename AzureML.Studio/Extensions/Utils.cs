@@ -5,8 +5,17 @@ using System.Globalization;
 
 namespace AzureML.Studio.Extensions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Utils
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="action"></param>
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (T element in source)
@@ -15,6 +24,12 @@ namespace AzureML.Studio.Extensions
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="e"></param>
+        /// <returns></returns>
         public static string GetDescription<T>(this T e) where T : IConvertible
         {
             var description = string.Empty;

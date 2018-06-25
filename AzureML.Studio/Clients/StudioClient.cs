@@ -11,6 +11,9 @@ using System.Text;
 
 namespace AzureML.Studio
 {
+    /// <summary>
+    /// Client class for Azure Machine Learning Studio management.
+    /// </summary>
     public class StudioClient
     {
         private readonly ManagementService _managementService;
@@ -300,7 +303,7 @@ namespace AzureML.Studio
         /// <summary>
         /// Get a dataset from workspace.
         /// </summary>
-        /// <param name="workspace">Required parameter to get desired dataset.<</param>
+        /// <param name="workspace">Required parameter to get desired dataset.</param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
         public IEnumerable<Dataset> GetDatasetsFromWorkspace(Workspace workspace)
         {
@@ -499,6 +502,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="datasetId"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(WorkspaceSettings workspaceSettings, string datasetId, string fileName = "dataset")
         {
             _managementService.DownloadDatasetAsync(workspaceSettings, datasetId, $"{fileName}.{workspaceSettings.WorkspaceId}.{datasetId}");
@@ -511,6 +515,7 @@ namespace AzureML.Studio
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
         /// <param name="datasetId"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(string workspaceId, string authorizationToken, string location, string datasetId, string fileName = "dataset")
         {
             DownloadDatasetFromWorkspace(new WorkspaceSettings()
@@ -526,6 +531,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="datasetId"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(Workspace workspace, string datasetId, string fileName = "dataset")
         {
             DownloadDatasetFromWorkspace(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, datasetId, fileName);
@@ -536,6 +542,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="dataset"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(WorkspaceSettings workspaceSettings, Dataset dataset, string fileName = "dataset")
         {
             DownloadDatasetFromWorkspace(workspaceSettings, dataset.Id, fileName);
@@ -548,6 +555,7 @@ namespace AzureML.Studio
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
         /// <param name="dataset"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(string workspaceId, string authorizationToken, string location, Dataset dataset, string fileName = "dataset")
         {
             DownloadDatasetFromWorkspace(workspaceId, authorizationToken, location, dataset.Id, fileName);
@@ -558,6 +566,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="dataset"></param>
+        /// <param name="fileName"></param>
         public void DownloadDatasetFromWorkspace(Workspace workspace, Dataset dataset, string fileName = "dataset")
         {
             DownloadDatasetFromWorkspace(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, dataset, fileName);
@@ -2205,9 +2214,11 @@ namespace AzureML.Studio
         /// Modify node parameter by changing its value.
         /// </summary>
         /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
         /// <param name="nodeNameComment"></param>
         /// <param name="nodeParameterName"></param>
         /// <param name="value"></param>
+        /// <param name="saveAs"></param>
         public void ModifyNodeParameter(WorkspaceSettings workspaceSettings, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
         {
             ModifyNodeParameterProcess(workspaceSettings, experimentId, nodeNameComment, nodeParameterName, value, saveAs);
@@ -2223,6 +2234,7 @@ namespace AzureML.Studio
         /// <param name="nodeNameComment"></param>
         /// <param name="nodeParameterName"></param>
         /// <param name="value"></param>
+        /// <param name="saveAs"></param>
         public void ModifyNodeParameter(string workspaceId, string authorizationToken, string location, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
         {
             ModifyNodeParameter(new WorkspaceSettings()
@@ -2241,9 +2253,56 @@ namespace AzureML.Studio
         /// <param name="nodeNameComment"></param>
         /// <param name="nodeParameterName"></param>
         /// <param name="value"></param>
+        /// <param name="saveAs"></param>
         public void ModifyNodeParameter(Workspace workspace, string experimentId, string nodeNameComment, string nodeParameterName, string value, string saveAs = "")
         {
             ModifyNodeParameter(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, nodeNameComment, nodeParameterName, value, saveAs);
+        }
+
+        /// <summary>
+        /// Modify edge connection between two modules.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputNodeNameComment"></param>
+        /// <param name="inputNodeNameComment"></param>
+        /// <param name="saveAs"></param>
+        public void ModifyNodeEdge(WorkspaceSettings workspaceSettings, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        {
+            ModifyNodeEdgeProcess(workspaceSettings, experimentId, outputNodeNameComment, inputNodeNameComment, saveAs);
+        }
+
+        /// <summary>
+        /// Modify edge connection between two modules.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputNodeNameComment"></param>
+        /// <param name="inputNodeNameComment"></param>
+        /// <param name="saveAs"></param>
+        public void ModifyNodeEdge(string workspaceId, string authorizationToken, string location, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        {
+            ModifyNodeEdge(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId, outputNodeNameComment, inputNodeNameComment, saveAs);
+        }
+
+        /// <summary>
+        /// Modify edge connection between two modules.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputNodeNameComment"></param>
+        /// <param name="inputNodeNameComment"></param>
+        /// <param name="saveAs"></param>
+        public void ModifyNodeEdge(Workspace workspace, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        {
+            ModifyNodeEdge(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, outputNodeNameComment, inputNodeNameComment, saveAs);
         }
 
         #region Private Helpers
@@ -2296,6 +2355,7 @@ namespace AzureML.Studio
         /// <param name="nodeNameComment"></param>
         /// <param name="nodeNameParameter"></param>
         /// <param name="value"></param>
+        /// <param name="saveAs"></param>
         private void ModifyNodeParameterProcess(WorkspaceSettings workspaceSettings, string experimentId, string nodeNameComment, string nodeNameParameter, string value, string saveAs = "")
         {
             var rawJson = string.Empty;
@@ -2308,7 +2368,7 @@ namespace AzureML.Studio
                 {
                     foreach (var moduleParameter in moduleNode["ModuleParameters"])
                     {
-                        if(moduleParameter["Name"] == nodeNameParameter)
+                        if (moduleParameter["Name"] == nodeNameParameter)
                         {
                             moduleParameter["Value"] = value;
                         }
@@ -2318,7 +2378,7 @@ namespace AzureML.Studio
 
             var modifiedRawJson = JsonConvert.SerializeObject(jsonObject);
 
-            if(!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs))
+            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs))
             {
                 _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Modified Parameter] " + saveAs);
             }
@@ -2326,6 +2386,32 @@ namespace AzureML.Studio
             {
                 _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="outputNameComment"></param>
+        /// <param name="inputNodeNameComment"></param>
+        /// <param name="saveAs"></param>
+        private void ModifyNodeEdgeProcess(WorkspaceSettings workspaceSettings, string experimentId, string outputNameComment, string inputNodeNameComment, string saveAs = "")
+        {
+            var rawJson = string.Empty;
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+
+            dynamic jsonObject = JsonConvert.DeserializeObject<object>(rawJson);
+            var moduleIdDictionary = new Dictionary<object, object>();
+            var moduleNodes = jsonObject["Graph"]["ModuleNodes"];
+            foreach (var moduleNode in moduleNodes)
+            {
+                moduleIdDictionary.Add(moduleNode["Comment"], moduleNode["Id"]);
+            }
+
+            var edgesInternal = jsonObject["Graph"]["EdgesInternal"];
+
+
         }
         #endregion
     }

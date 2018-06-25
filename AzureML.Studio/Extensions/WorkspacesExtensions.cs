@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AzureML.Studio.Extensions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class WorkspacesExtensions
     {
         private static readonly ManagementService _managementService;

@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AzureML.Studio.Extensions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class WorkspaceExtensions
     {
         private static readonly ManagementService _managementService;
@@ -50,7 +53,7 @@ namespace AzureML.Studio.Extensions
         /// <summary>
         /// Add new user to workspace. 
         /// </summary>
-        /// <param name="workspaceSettings">Required parameter to add new user to specific workspace.</param>
+        /// <param name="workspace">Required parameter to add new user to specific workspace.</param>
         /// <param name="workspaceUser">Required parameter to add new user profile.</param>
         public static void AddUser(this Workspace workspace, WorkspaceUser workspaceUser)
         {

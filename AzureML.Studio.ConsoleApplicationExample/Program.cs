@@ -6,7 +6,7 @@ namespace AzureML.Studio.ConsoleApplicationExample
     {
         static void Main(string[] args)
         {
-            //var studioClient = new StudioClient();
+            var studioClient = new StudioClient();
 
             //CopyExperimentFromWorkspaceToWorkspaceSamePricingSameRegion(studioClient);
             //CopyExperimentFromWorkspaceToWorkspaceDifferentPricingSameRegion(studioClient);
@@ -15,6 +15,8 @@ namespace AzureML.Studio.ConsoleApplicationExample
 
             //ModifyExperimentNodeAndOverwrite(studioClient);
             //ModifyExperimentNodeAndSaveAsAnotherExperiment(studioClient);
+
+            ModifyConnectionWithinTheModulesAndOverwrite(studioClient);
         }
 
         /// <summary>
@@ -181,6 +183,72 @@ namespace AzureML.Studio.ConsoleApplicationExample
             var experiment = studioClient.GetExperiment(workspace, experimentId);
 
             studioClient.ModifyNodeParameter(workspace, experimentId, "Import Data Comment", "Database Query", "SELECT Name, Color, CAST(Weight AS float) Weight\r\nFROM SalesLT.Product", "Import Data - Experiment 2");
+        }
+
+        /// <summary>
+        /// Modify Experiment: 'Connect Modules - Experiment'
+        /// Origin Modules Connection:
+        /// ROOT: 'Enter Data Manually',
+        /// ROOT-OUTPUT:
+        /// - 1-MODULE: 'Convert to CSV'
+        /// - 2-MODULE: 'Convert to ARFF'
+        /// - 3-MODULE: 'Convert to Dataset'
+        /// 
+        /// Modified Modules Connection:
+        /// ROOT: 'Enter Data Manually',
+        /// ROOT-OUTPUT:
+        /// - 1-MODULE: 'Convert to CSV',
+        /// - 1-MODULE-OUTPUT:
+        /// -- 3-MODULE: 'Convert to Dataset'
+        /// - 2-MODULE: 'Convert to ARFF'
+        /// </summary>
+        /// <param name="studioClient"></param>
+        static void ModifyConnectionWithinTheModulesAndOverwrite(StudioClient studioClient)
+        {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "a53b50c55ee2493291a621840c2b6f2c",
+                AuthorizationToken = "k6LjR+FDI+rm+0bv6TNroEODTXpTqQGCcOSI7uKeiPaWcFMu7UIn4XV5dtAj+ULy6JiRoBZIOYThe3S99p/stA==",
+                Location = "West Europe"
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "a53b50c55ee2493291a621840c2b6f2c.f-id.f06dcc31959c48d8adda4f8b3a422bb5";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            studioClient.ModifyNodeEdge(workspace, experimentId, "", "");
+        }
+
+        /// <summary>
+        /// Modify Experiment: 'Connect Modules - Experiment'
+        /// Origin Modules Connection:
+        /// ROOT: 'Enter Data Manually',
+        /// ROOT-OUTPUT:
+        /// - 1-MODULE: 'Convert to CSV'
+        /// - 2-MODULE: 'Convert to ARFF'
+        /// - 3-MODULE: 'Convert to Dataset'
+        /// 
+        /// Modified Modules Connection:
+        /// ROOT: 'Enter Data Manually',
+        /// ROOT-OUTPUT:
+        /// - 1-MODULE: 'Convert to CSV',
+        /// - 1-MODULE-OUTPUT:
+        /// -- 3-MODULE: 'Convert to Dataset'
+        /// - 2-MODULE: 'Convert to ARFF'
+        /// </summary>
+        /// <param name="studioClient"></param>
+        static void ModifyConnectionWithinTheModulesAndSaveAsAnotherExperiment(StudioClient studioClient)
+        {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "a53b50c55ee2493291a621840c2b6f2c",
+                AuthorizationToken = "k6LjR+FDI+rm+0bv6TNroEODTXpTqQGCcOSI7uKeiPaWcFMu7UIn4XV5dtAj+ULy6JiRoBZIOYThe3S99p/stA==",
+                Location = "West Europe"
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "a53b50c55ee2493291a621840c2b6f2c.f-id.f06dcc31959c48d8adda4f8b3a422bb5";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
         }
     }
 }
