@@ -11,10 +11,14 @@
     <PackageProjectUrl>https://github.com/borysrybak/AzureMachineLearningStudio</PackageProjectUrl>
     <RepositoryUrl>https://github.com/borysrybak/AzureMachineLearningStudio</RepositoryUrl>
     <PackageTags></PackageTags>
-    <PackageReleaseNotes>v1.0.2-alpha</PackageReleaseNotes>
+    <PackageReleaseNotes>v1.0.3-alpha</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/borysrybak/AzureMachineLearningStudio/blob/master/LICENSE</PackageLicenseUrl>
     <PackageId>AzureML.Studio</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\AzureML.Studio.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
