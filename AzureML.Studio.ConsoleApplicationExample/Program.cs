@@ -16,7 +16,11 @@ namespace AzureML.Studio.ConsoleApplicationExample
             //ModifyExperimentNodeAndOverwrite(studioClient);
             //ModifyExperimentNodeAndSaveAsAnotherExperiment(studioClient);
 
-            ModifyConnectionWithinTheModulesAndOverwrite(studioClient);
+            //ModifyConnectionWithinTheModulesAndOverwrite(studioClient);
+            //ModifyConnectionWithinTheModulesAndSaveAsAnotherExperiment(studioClient);
+
+            //AddModuleToTheExperimentAndOverwrite(studioClient);
+            AddModuleToTheExperimentAndSaveAsAnotherExperiment(studioClient);
         }
 
         /// <summary>
@@ -207,16 +211,16 @@ namespace AzureML.Studio.ConsoleApplicationExample
         {
             var workspace = new WorkspaceSettings()
             {
-                WorkspaceId = "a53b50c55ee2493291a621840c2b6f2c",
-                AuthorizationToken = "k6LjR+FDI+rm+0bv6TNroEODTXpTqQGCcOSI7uKeiPaWcFMu7UIn4XV5dtAj+ULy6JiRoBZIOYThe3S99p/stA==",
-                Location = "West Europe"
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = ""
             };
 
             //var experiments = studioClient.GetExperiments(sourceWorkspace);
-            var experimentId = "a53b50c55ee2493291a621840c2b6f2c.f-id.f06dcc31959c48d8adda4f8b3a422bb5";
+            var experimentId = "";
             var experiment = studioClient.GetExperiment(workspace, experimentId);
 
-            studioClient.ModifyNodeEdge(workspace, experimentId, "", "");
+            studioClient.ModifyNodeEdge(workspace, experimentId, "CSV", "Dataset");
         }
 
         /// <summary>
@@ -241,14 +245,68 @@ namespace AzureML.Studio.ConsoleApplicationExample
         {
             var workspace = new WorkspaceSettings()
             {
-                WorkspaceId = "a53b50c55ee2493291a621840c2b6f2c",
-                AuthorizationToken = "k6LjR+FDI+rm+0bv6TNroEODTXpTqQGCcOSI7uKeiPaWcFMu7UIn4XV5dtAj+ULy6JiRoBZIOYThe3S99p/stA==",
-                Location = "West Europe"
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = ""
             };
 
             //var experiments = studioClient.GetExperiments(sourceWorkspace);
-            var experimentId = "a53b50c55ee2493291a621840c2b6f2c.f-id.f06dcc31959c48d8adda4f8b3a422bb5";
+            var experimentId = "";
             var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            studioClient.ModifyNodeEdge(workspace, experimentId, "CSV", "Dataset", "Connect Modules - Experiment 2");
+        }
+
+        /// <summary>
+        /// Modify Experiment: 'Add Module - Experiment'
+        /// </summary>
+        /// <param name="studioClient"></param>
+        static void AddModuleToTheExperimentAndOverwrite(StudioClient studioClient)
+        {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = ""
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            var nameOfNewModule = "";
+            //nameOfNewModule hard-coded
+            //TODO: make a dictionary of <Module Names, Module IDs>
+            //EXAMPLES:
+            //Convert to TSV: 506153734175476c4f62416c57734963.1cdbcda42ece49088b87e6b636258d3d.v1-default-1644
+            //Convert to Dataset: 506153734175476c4f62416c57734963.72bf58e0fc874bb19704f1805003b975.v1-default-1642
+            studioClient.AddModule(workspace, experimentId, nameOfNewModule);
+        }
+
+        /// <summary>
+        /// Modify Experiment: 'Add Module - Experiment'
+        /// </summary>
+        /// <param name="studioClient"></param>
+        static void AddModuleToTheExperimentAndSaveAsAnotherExperiment(StudioClient studioClient)
+        {
+            var workspace = new WorkspaceSettings()
+            {
+                WorkspaceId = "",
+                AuthorizationToken = "",
+                Location = ""
+            };
+
+            //var experiments = studioClient.GetExperiments(sourceWorkspace);
+            var experimentId = "";
+            var experiment = studioClient.GetExperiment(workspace, experimentId);
+
+            var nameOfNewModule = "";
+            //nameOfNewModule hard-coded
+            //TODO: make a dictionary of <Module Names, Module IDs>
+            //EXAMPLES:
+            //Convert to TSV: 506153734175476c4f62416c57734963.1cdbcda42ece49088b87e6b636258d3d.v1-default-1644
+            //Convert to Dataset: 506153734175476c4f62416c57734963.72bf58e0fc874bb19704f1805003b975.v1-default-1642
+            studioClient.AddModule(workspace, experimentId, nameOfNewModule, "Connect Modules - Experiment 2");
         }
     }
 }
