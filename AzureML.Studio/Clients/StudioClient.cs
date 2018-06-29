@@ -3,6 +3,8 @@ using AzureML.Studio.Core.Models;
 using AzureML.Studio.Core.Services;
 using AzureML.Studio.Extensions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -2264,12 +2266,12 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="experimentId"></param>
-        /// <param name="outputNodeNameComment"></param>
-        /// <param name="inputNodeNameComment"></param>
+        /// <param name="sourceNodeComment"></param>
+        /// <param name="destinationNodeComment"></param>
         /// <param name="saveAs"></param>
-        public void ModifyNodeEdge(WorkspaceSettings workspaceSettings, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        public void ModifyNodeEdge(WorkspaceSettings workspaceSettings, string experimentId, string sourceNodeComment, string destinationNodeComment, string saveAs = "")
         {
-            ModifyNodeEdgeProcess(workspaceSettings, experimentId, outputNodeNameComment, inputNodeNameComment, saveAs);
+            ModifyNodeEdgeProcess(workspaceSettings, experimentId, sourceNodeComment, destinationNodeComment, saveAs);
         }
 
         /// <summary>
@@ -2279,17 +2281,17 @@ namespace AzureML.Studio
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
         /// <param name="experimentId"></param>
-        /// <param name="outputNodeNameComment"></param>
-        /// <param name="inputNodeNameComment"></param>
+        /// <param name="sourceNodeComment"></param>
+        /// <param name="destinationNodeComment"></param>
         /// <param name="saveAs"></param>
-        public void ModifyNodeEdge(string workspaceId, string authorizationToken, string location, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        public void ModifyNodeEdge(string workspaceId, string authorizationToken, string location, string experimentId, string sourceNodeComment, string destinationNodeComment, string saveAs = "")
         {
             ModifyNodeEdge(new WorkspaceSettings()
             {
                 WorkspaceId = workspaceId,
                 AuthorizationToken = authorizationToken,
                 Location = location
-            }, experimentId, outputNodeNameComment, inputNodeNameComment, saveAs);
+            }, experimentId, sourceNodeComment, destinationNodeComment, saveAs);
         }
 
         /// <summary>
@@ -2297,12 +2299,55 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="experimentId"></param>
-        /// <param name="outputNodeNameComment"></param>
-        /// <param name="inputNodeNameComment"></param>
+        /// <param name="sourceNodeComment"></param>
+        /// <param name="destinationNodeComment"></param>
         /// <param name="saveAs"></param>
-        public void ModifyNodeEdge(Workspace workspace, string experimentId, string outputNodeNameComment, string inputNodeNameComment, string saveAs = "")
+        public void ModifyNodeEdge(Workspace workspace, string experimentId, string sourceNodeComment, string destinationNodeComment, string saveAs = "")
         {
-            ModifyNodeEdge(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, outputNodeNameComment, inputNodeNameComment, saveAs);
+            ModifyNodeEdge(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, sourceNodeComment, destinationNodeComment, saveAs);
+        }
+
+        /// <summary>
+        /// Add new module to the experiment.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nameOfNewModule"></param>
+        /// <param name="saveAs"></param>
+        public void AddModule(WorkspaceSettings workspaceSettings, string experimentId, string nameOfNewModule, string saveAs = "")
+        {
+            AddModuleProcess(workspaceSettings, experimentId, nameOfNewModule, saveAs);
+        }
+
+        /// <summary>
+        /// Add new module to the experiment.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nameOfNewModule"></param>
+        /// <param name="saveAs"></param>
+        public void AddModule(string workspaceId, string authorizationToken, string location, string experimentId, string nameOfNewModule, string saveAs = "")
+        {
+            AddModule(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            }, experimentId, nameOfNewModule, saveAs);
+        }
+
+        /// <summary>
+        /// Add new module to the experiment.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nameOfNewModule"></param>
+        /// <param name="saveAs"></param>
+        public void AddModule(Workspace workspace, string experimentId, string nameOfNewModule, string saveAs = "")
+        {
+            AddModule(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentId, nameOfNewModule, saveAs);
         }
 
         #region Private Helpers
@@ -2311,15 +2356,15 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="inputFile"></param>
-        /// <param name="newName"></param>
-        private void ImportExperimentProcess(WorkspaceSettings workspaceSettings, string inputFile, string newName = "default")
+        /// <param name="saveAs"></param>
+        private void ImportExperimentProcess(WorkspaceSettings workspaceSettings, string inputFile, string saveAs = "")
         {
             var rawJson = File.ReadAllText(inputFile);
             var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(rawJson));
             var serializer = new DataContractJsonSerializer(typeof(Experiment));
             var experiment = (Experiment)serializer.ReadObject(memoryStream);
 
-            if (!newName.Equals("default")) _managementService.SaveExperimentAs(workspaceSettings, experiment, rawJson, newName);
+            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs)) _managementService.SaveExperimentAs(workspaceSettings, experiment, rawJson, saveAs);
             else _managementService.SaveExperiment(workspaceSettings, experiment, rawJson);
         }
 
@@ -2378,40 +2423,134 @@ namespace AzureML.Studio
 
             var modifiedRawJson = JsonConvert.SerializeObject(jsonObject);
 
-            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs))
-            {
-                _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Modified Parameter] " + saveAs);
-            }
-            else
-            {
-                _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
-            }
+            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs)) _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Modified Parameter] " + saveAs);
+            else _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
         }
 
         /// <summary>
-        /// 
+        /// Process of modifying node edge connection.
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="experimentId"></param>
-        /// <param name="outputNameComment"></param>
-        /// <param name="inputNodeNameComment"></param>
+        /// <param name="sourceNodeComment"></param>
+        /// <param name="destinationNodeComment"></param>
         /// <param name="saveAs"></param>
-        private void ModifyNodeEdgeProcess(WorkspaceSettings workspaceSettings, string experimentId, string outputNameComment, string inputNodeNameComment, string saveAs = "")
+        private void ModifyNodeEdgeProcess(WorkspaceSettings workspaceSettings, string experimentId, string sourceNodeComment, string destinationNodeComment, string saveAs = "")
         {
             var rawJson = string.Empty;
             var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
 
             dynamic jsonObject = JsonConvert.DeserializeObject<object>(rawJson);
-            var moduleIdDictionary = new Dictionary<object, object>();
+            var moduleIdDictionary = new Dictionary<string, Tuple<string, List<string>, List<string>>>();
+
             var moduleNodes = jsonObject["Graph"]["ModuleNodes"];
             foreach (var moduleNode in moduleNodes)
             {
-                moduleIdDictionary.Add(moduleNode["Comment"], moduleNode["Id"]);
+                var moduleIdDictionaryKey = Convert.ToString(moduleNode["Comment"]);
+                var moduleId = Convert.ToString(moduleNode["Id"]);
+
+                var moduleInputPortsInternal = new List<string>();
+                var moduleNodeInputPortsInternal = moduleNode["InputPortsInternal"];
+                if (moduleNodeInputPortsInternal != null)
+                {
+                    foreach (var inputPortInternal in moduleNodeInputPortsInternal)
+                    {
+                        var inputPortInternalName = Convert.ToString(inputPortInternal["Name"]);
+                        moduleInputPortsInternal.Add(inputPortInternalName);
+                    }
+                }
+
+                var moduleOutputPortsInternal = new List<string>();
+                var moduleNodeOutputPortsInternal = moduleNode["OutputPortsInternal"];
+                if (moduleNodeOutputPortsInternal != null)
+                {
+                    foreach (var outputPortInternal in moduleNodeOutputPortsInternal)
+                    {
+                        var outputPortInternalName = Convert.ToString(outputPortInternal["Name"]);
+                        moduleOutputPortsInternal.Add(outputPortInternalName);
+                    }
+                }
+
+                var tupleValue = Tuple.Create(moduleId, moduleInputPortsInternal, moduleOutputPortsInternal);
+                moduleIdDictionary.Add(moduleIdDictionaryKey, tupleValue);
             }
 
-            var edgesInternal = jsonObject["Graph"]["EdgesInternal"];
+            var list = new List<dynamic>();
+            dynamic lastEdge = null;
+            foreach (var edgeInternal in jsonObject["Graph"]["EdgesInternal"])
+            {
+                var desiredDestinationNodeId = moduleIdDictionary[destinationNodeComment].Item1;
+                var desiredDestinationNodeIdName = moduleIdDictionary[destinationNodeComment].Item2[0];
+                var desiredDestinationInputPortId = desiredDestinationNodeId + ":" + desiredDestinationNodeIdName;
+                var edgeInternalValue = edgeInternal["DestinationInputPortId"];
+                var convertedDestinationOutputPortId = Convert.ToString(edgeInternalValue);
+                if (convertedDestinationOutputPortId.Equals(desiredDestinationInputPortId))
+                {
+                    var newSourcePortId = moduleIdDictionary[sourceNodeComment].Item1;
+                    var newSourcePortIdName = moduleIdDictionary[sourceNodeComment].Item3[0];
+                    var newSourceOutputPortId = newSourcePortId + ":" + newSourcePortIdName;
+                    edgeInternal["SourceOutputPortId"] = newSourceOutputPortId;
+                    lastEdge = edgeInternal;
+                }
+                else
+                {
+                    list.Add(edgeInternal);
+                }
+            }
 
+            list.Add(lastEdge);
 
+            var serializedListObject = JsonConvert.SerializeObject(list).Replace(@"\""", @"""");
+            var deserializedObject = JsonConvert.DeserializeObject(serializedListObject);
+            jsonObject["Graph"]["EdgesInternal"] = (JToken)deserializedObject;
+
+            var modifiedRawJson = JsonConvert.SerializeObject(jsonObject);
+
+            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs)) _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Modified Edge] " + saveAs);
+            else _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
+        }
+
+        /// <summary>
+        /// Process of adding desired new module.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <param name="experimentId"></param>
+        /// <param name="nameOfNewModule"></param>
+        /// <param name="saveAs"></param>
+        private void AddModuleProcess(WorkspaceSettings workspaceSettings, string experimentId, string nameOfNewModule, string saveAs = "")
+        {
+            var rawJson = string.Empty;
+            var experiment = _managementService.GetExperimentById(workspaceSettings, experimentId, out rawJson);
+
+            dynamic jsonObject = JsonConvert.DeserializeObject<object>(rawJson);
+
+            var list = new List<dynamic>();
+            foreach (var moduleNode in jsonObject["Graph"]["ModuleNodes"])
+            {
+                list.Add(moduleNode);
+            }
+
+            var newModuleId = nameOfNewModule;
+
+            var newModule = new ModuleNode()
+            {
+                ModuleId = newModuleId,
+                Comment = "New module",
+                ModuleParameters = new List<ModuleParameter>(),
+                InputPortsInternal = new List<InputPortInternal>(),
+                OutputPortsInternal = new List<OutputPortInternal>()
+            };
+
+            list.Add(newModule);
+
+            var serializedListObject = JsonConvert.SerializeObject(list).Replace(@"\""", @"""");
+            var deserializedObject = JsonConvert.DeserializeObject(serializedListObject);
+            jsonObject["Graph"]["ModuleNodes"] = (JToken)deserializedObject;
+
+            var modifiedRawJson = JsonConvert.SerializeObject(jsonObject);
+
+            if (!string.IsNullOrEmpty(saveAs) || !string.IsNullOrWhiteSpace(saveAs)) _managementService.SaveExperimentAs(workspaceSettings, experiment, modifiedRawJson, "[Added Module] " + saveAs);
+            else _managementService.SaveExperiment(workspaceSettings, experiment, modifiedRawJson);
         }
         #endregion
     }
