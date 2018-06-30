@@ -73,6 +73,25 @@ And create a workspace withing the portal:
 
 ### Software
 
+***AzureML.Studio.dll*** and ***AzureML.Studio.Core.dll*** are class libraries written in .NET Standard 2.0 .
+
+*"The .NET Standard is a formal specification of .NET APIs that are intended to be available on all .NET implementations.
+The motivation behind the .NET Standard is establishing greater uniformity in the .NET ecosystem.
+ECMA 335 continues to establish uniformity for .NET implementation behavior,
+but there is no similar spec for the .NET Base Class Libraries (BCL) for .NET library implementations."*
+
+You can use these DLLs in particluar, however before using concider the following table of all versions of .NET Standard and the platforms supported (*source: [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard#net-platforms-support)*):
+
+| **.NET Standard**             | **1.0** | **1.1** | **1.2** | **1.3** | **1.4** | **1.5** | **1.6** | **2.0** |
+| :---------------------------- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
+| .NET Core                     | 1.0     |	1.0 	| 1.0 	  | 1.0 	| 1.0 	  | 1.0 	| 1.0 	  | 2.0     |
+| .NET Framework                | 4.5     |	4.5     | 4.5.1   | 4.6     | 4.6.1   |	4.6.1   | 4.6.1   |	4.6.1   |
+| Mono                          | 4.6     |	4.6     | 4.6 	  | 4.6     | 4.6     |	4.6     | 4.6     |	5.4     |
+| Xamarin.iOS                   | 10.0    |	10.0    | 10.0    |	10.0    | 10.0    |	10.0 	| 10.0    |	10.14   |
+| Xamarin.Mac                   | 3.0     |	3.0     | 3.0     |	3.0     | 3.0     |	3.0 	| 3.0     |	3.8     |
+| Xamarin.Android               | 7.0 	  | 7.0     | 7.0 	  | 7.0 	| 7.0     |	7.0     | 7.0     |	8.0     |
+| Universal Windows Platform    | 10.0    | 10.0    | 10.0    | 10.0    | 10.0 	  | 10.0.16299 | 10.0.16299 | 10.0.16299 |
+
 ### Tools & Libraries
 
 ## Usage
