@@ -65,6 +65,7 @@ Alternatively, create an Azure Account with a subscription.
 - [Azure Pass](https://www.microsoftazurepass.com/Home/HowTo)
 
 And create a workspace withing the portal:
+
 ![azureportalresources](assets/azure-portal-resources.png)
 ![azureportalresourcescreate](assets/azure-portal-resources-create.png)
 ![azureportalresourcesprice](assets/azure-portal-resources-price.png)
