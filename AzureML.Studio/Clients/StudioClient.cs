@@ -53,15 +53,15 @@ namespace AzureML.Studio
         /// <summary>
         /// Get selected workspaces metadata. 
         /// </summary>
-        /// <param name="workspaceSettings">Required parameter to get desired workspaces.</param>
+        /// <param name="workspacesSettings">Required parameter to get desired workspaces.</param>
         /// <returns>Returns collection of workspace objects.</returns>
-        public IEnumerable<Workspace> GetWorkspaces(IEnumerable<WorkspaceSettings> workspaceSettings)
+        public IEnumerable<Workspace> GetWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
-            return workspaceSettings.Select(i => GetWorkspace(i));
+            return workspacesSettings.Select(i => GetWorkspace(i));
         }
 
         /// <summary>
-        /// Get Users of workspace.
+        /// Get Users of the workspace.
         /// </summary>
         /// <param name="workspaceSettings">Required parameter to get workspace users.</param>
         /// <returns>Returns collection of users from that particular workspace.</returns>
@@ -87,7 +87,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns>Returns collection of users from that particular workspace.</returns>
-        public IEnumerable<WorkspaceUser> GetWorkspaceUser(Workspace workspace)
+        public IEnumerable<WorkspaceUser> GetWorkspaceUsers(Workspace workspace)
         {
             return GetWorkspaceUsers(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
         }
@@ -97,7 +97,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings">Required parameter to get users from specific workspace.</param>
         /// <returns>Returns dictionary of workspaces and its workspace users.</returns>
-        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspaceUsers(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspacesUsers(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
             return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetWorkspaceUsers(ws));
         }
@@ -107,9 +107,9 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces">Required parameter to get users from specific workspace.</param>
         /// <returns>Returns dictionary of workspaces and its workspace users.</returns>
-        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspaceUsers(IEnumerable<Workspace> workspaces)
+        public IDictionary<Workspace, IEnumerable<WorkspaceUser>> GetWorkspacesUsers(IEnumerable<Workspace> workspaces)
         {
-            return workspaces.ToDictionary(w => w, w => GetWorkspaceUser(w));
+            return workspaces.ToDictionary(w => w, w => GetWorkspaceUsers(w));
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="workspaceUser"></param>
-        public void AddUserToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, WorkspaceUser workspaceUser)
+        public void AddUserToWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, WorkspaceUser workspaceUser)
         {
             workspacesSettings.ForEach(ws => AddUserToWorkspace(ws, workspaceUser));
         }
@@ -199,9 +199,9 @@ namespace AzureML.Studio
         /// <param name="workspacesSettings"></param>
         /// <param name="email"></param>
         /// <param name="role"></param>
-        public void AddUserToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, string email, string role)
+        public void AddUserToWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, string email, string role)
         {
-            AddUserToWorkspace(workspacesSettings, new WorkspaceUser(
+            AddUserToWorkspaces(workspacesSettings, new WorkspaceUser(
                 new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } }));
         }
 
@@ -210,7 +210,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="workspaceUser"></param>
-        public void AddUserToWorkspace(IEnumerable<Workspace> workspaces, WorkspaceUser workspaceUser)
+        public void AddUserToWorkspaces(IEnumerable<Workspace> workspaces, WorkspaceUser workspaceUser)
         {
             workspaces.ForEach(w => AddUserToWorkspace(w, workspaceUser));
         }
@@ -221,7 +221,7 @@ namespace AzureML.Studio
         /// <param name="workspaces"></param>
         /// <param name="email"></param>
         /// <param name="role"></param>
-        public void AddUserToWorkspace(IEnumerable<Workspace> workspaces, string email, string role)
+        public void AddUserToWorkspaces(IEnumerable<Workspace> workspaces, string email, string role)
         {
             workspaces.ForEach(w => AddUserToWorkspace(w, new WorkspaceUser(
                 new WorkspaceUserInternal() { User = new UserDetailInternal() { Email = email, Role = role } })));
@@ -265,7 +265,7 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="workspaceUsers"></param>
-        public void AddUsersToWorkspace(IEnumerable<WorkspaceSettings> workspacesSettings, IEnumerable<WorkspaceUser> workspaceUsers)
+        public void AddUsersToWorkspaces(IEnumerable<WorkspaceSettings> workspacesSettings, IEnumerable<WorkspaceUser> workspaceUsers)
         {
             workspacesSettings.ForEach(ws => AddUsersToWorkspace(ws, workspaceUsers));
         }
@@ -275,13 +275,13 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="workspaceUsers"></param>
-        public void AddUsersToWorkspace(IEnumerable<Workspace> workspaces, IEnumerable<WorkspaceUser> workspaceUsers)
+        public void AddUsersToWorkspaces(IEnumerable<Workspace> workspaces, IEnumerable<WorkspaceUser> workspaceUsers)
         {
             workspaces.ForEach(w => AddUsersToWorkspace(w, workspaceUsers));
         }
 
         /// <summary>
-        /// Get a dataset from workspace.
+        /// Get a datasets from workspace.
         /// </summary>
         /// <param name="workspaceSettings">Required parameter to get desired dataset.</param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
@@ -291,7 +291,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get a dataset from workspace.
+        /// Get a datasets from workspace.
         /// </summary>
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
@@ -303,7 +303,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get a dataset from workspace.
+        /// Get a datasets from workspace.
         /// </summary>
         /// <param name="workspace">Required parameter to get desired dataset.</param>
         /// <returns>Returns dataset collection from particular workspace.</returns>
@@ -313,7 +313,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get a dataset for selected workspaces.
+        /// Get a datasets for selected workspaces.
         /// </summary>
         /// <param name="workspacesSettings">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
@@ -323,7 +323,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get a dataset for selected workspaces.
+        /// Get a datasets for selected workspaces.
         /// </summary>
         /// <param name="workspaces">Required parameter to get workspace, dataset dictionary.</param>
         /// <returns>Returns dictionary of workspaces and its datasets.</returns>
@@ -783,63 +783,6 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get experiments from workspace.
-        /// </summary>
-        /// <param name="workspaceSettings"></param>
-        /// <returns>Returns experiments collection from workspace.</returns>
-        public IEnumerable<Experiment> GetExperiments(WorkspaceSettings workspaceSettings)
-        {
-            return _managementService.GetExperiments(workspaceSettings);
-        }
-
-        /// <summary>
-        /// Get experiments from workspace.
-        /// </summary>
-        /// <param name="workspaceId"></param>
-        /// <param name="authorizationToken"></param>
-        /// <param name="location"></param>
-        /// <returns>Returns experiments collection from workspace.</returns>
-        public IEnumerable<Experiment> GetExperiments(string workspaceId, string authorizationToken, string location)
-        {
-            return GetExperiments(new WorkspaceSettings()
-            {
-                WorkspaceId = workspaceId,
-                AuthorizationToken = authorizationToken,
-                Location = location
-            });
-        }
-
-        /// <summary>
-        /// Get experiments from workspace.
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns>Returns experiments collection from workspace.</returns>
-        public IEnumerable<Experiment> GetExperiments(Workspace workspace)
-        {
-            return GetExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
-        }
-
-        /// <summary>
-        /// Get experiments from workspaces.
-        /// </summary>
-        /// <param name="workspacesSettings"></param>
-        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
-        public IDictionary<Workspace, IEnumerable<Experiment>> GetExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
-        {
-            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetExperiments(ws));
-        }
-
-        /// <summary>
-        /// Get experiments from workspaces.
-        /// </summary>
-        /// <param name="workspaces"></param>
-        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
-        public IDictionary<Workspace, IEnumerable<Experiment>> GetExperiments(IEnumerable<Workspace> workspaces)
-        {
-            return workspaces.ToDictionary(w => w, w => GetExperiments(w));
-        }
-
-        /// <summary>
         /// Get experiment by id.
         /// </summary>
         /// <param name="workspaceSettings"></param>
@@ -918,6 +861,63 @@ namespace AzureML.Studio
         public IEnumerable<Experiment> GetExperiments(Workspace workspace, IEnumerable<string> experimentsIds)
         {
             return GetExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region, experimentsIds);
+        }
+
+        /// <summary>
+        /// Get all experiments from selected workspaces.
+        /// </summary>
+        /// <param name="workspacesSettings"></param>
+        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
+        public IDictionary<Workspace, IEnumerable<Experiment>> GetAllExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        {
+            return workspacesSettings.ToDictionary(ws => GetWorkspace(ws), ws => GetAllExperiments(ws));
+        }
+
+        /// <summary>
+        /// Get all experiments from selected workspaces.
+        /// </summary>
+        /// <param name="workspaces"></param>
+        /// <returns>Returns a dictionary of workspaces and its collection of experiments.</returns>
+        public IDictionary<Workspace, IEnumerable<Experiment>> GetAllExperiments(IEnumerable<Workspace> workspaces)
+        {
+            return workspaces.ToDictionary(w => w, w => GetAllExperiments(w));
+        }
+
+        /// <summary>
+        /// Get all experiments from workspace.
+        /// </summary>
+        /// <param name="workspaceSettings"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetAllExperiments(WorkspaceSettings workspaceSettings)
+        {
+            return _managementService.GetExperiments(workspaceSettings);
+        }
+
+        /// <summary>
+        /// Get all experiments from workspace.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="authorizationToken"></param>
+        /// <param name="location"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetAllExperiments(string workspaceId, string authorizationToken, string location)
+        {
+            return GetAllExperiments(new WorkspaceSettings()
+            {
+                WorkspaceId = workspaceId,
+                AuthorizationToken = authorizationToken,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Get all experiments from workspace.
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns>Returns experiments collection from workspace.</returns>
+        public IEnumerable<Experiment> GetAllExperiments(Workspace workspace)
+        {
+            return GetAllExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
         }
 
         /// <summary>
@@ -1082,9 +1082,9 @@ namespace AzureML.Studio
         /// Run all experiments.
         /// </summary>
         /// <param name="workspaceSettings"></param>
-        public void RunExperiments(WorkspaceSettings workspaceSettings)
+        public void RunAllExperiments(WorkspaceSettings workspaceSettings)
         {
-            RunExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+            RunExperiments(workspaceSettings, GetAllExperiments(workspaceSettings));
         }
 
         /// <summary>
@@ -1093,36 +1093,36 @@ namespace AzureML.Studio
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
-        public void RunExperiments(string workspaceId, string authorizationToken, string location)
+        public void RunAllExperiments(string workspaceId, string authorizationToken, string location)
         {
-            RunExperiments(workspaceId, authorizationToken, location, GetExperiments(workspaceId, authorizationToken, location));
+            RunExperiments(workspaceId, authorizationToken, location, GetAllExperiments(workspaceId, authorizationToken, location));
         }
 
         /// <summary>
         /// Run all experiments.
         /// </summary>
         /// <param name="workspace"></param>
-        public void RunExperiments(Workspace workspace)
+        public void RunAllExperiments(Workspace workspace)
         {
-            RunExperiments(workspace, GetExperiments(workspace));
+            RunExperiments(workspace, GetAllExperiments(workspace));
         }
 
         /// <summary>
         /// Run all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspacesSettings"></param>
-        public void RunExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public void RunAllExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
-            workspacesSettings.ForEach(ws => RunExperiments(ws));
+            workspacesSettings.ForEach(ws => RunAllExperiments(ws));
         }
 
         /// <summary>
         /// Run all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
-        public void RunExperiments(IEnumerable<Workspace> workspaces)
+        public void RunAllExperiments(IEnumerable<Workspace> workspaces)
         {
-            workspaces.ForEach(w => RunExperiments(w));
+            workspaces.ForEach(w => RunAllExperiments(w));
         }
 
         /// <summary>
@@ -1274,9 +1274,9 @@ namespace AzureML.Studio
         /// Save all experiments.
         /// </summary>
         /// <param name="workspaceSettings"></param>
-        public void SaveExperiments(WorkspaceSettings workspaceSettings)
+        public void SaveAllExperiments(WorkspaceSettings workspaceSettings)
         {
-            SaveExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+            SaveExperiments(workspaceSettings, GetAllExperiments(workspaceSettings));
         }
 
         /// <summary>
@@ -1285,36 +1285,36 @@ namespace AzureML.Studio
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
-        public void SaveExperiments(string workspaceId, string authorizationToken, string location)
+        public void SaveAllExperiments(string workspaceId, string authorizationToken, string location)
         {
-            SaveExperiments(workspaceId, authorizationToken, location, GetExperiments(workspaceId, authorizationToken, location));
+            SaveExperiments(workspaceId, authorizationToken, location, GetAllExperiments(workspaceId, authorizationToken, location));
         }
 
         /// <summary>
         /// Save all experiments.
         /// </summary>
         /// <param name="workspace"></param>
-        public void SaveExperiments(Workspace workspace)
+        public void SaveAllExperiments(Workspace workspace)
         {
-            SaveExperiments(workspace, GetExperiments(workspace));
+            SaveExperiments(workspace, GetAllExperiments(workspace));
         }
 
         /// <summary>
         /// Save all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspacesSettings"></param>
-        public void SaveExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public void SaveAllExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
-            workspacesSettings.ForEach(ws => SaveExperiments(ws, GetExperiments(ws)));
+            workspacesSettings.ForEach(ws => SaveExperiments(ws, GetAllExperiments(ws)));
         }
 
         /// <summary>
         /// Save all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
-        public void SaveExperiments(IEnumerable<Workspace> workspaces)
+        public void SaveAllExperiments(IEnumerable<Workspace> workspaces)
         {
-            workspaces.ForEach(w => SaveExperiments(w, GetExperiments(w)));
+            workspaces.ForEach(w => SaveExperiments(w, GetAllExperiments(w)));
         }
 
         /// <summary>
@@ -1551,9 +1551,9 @@ namespace AzureML.Studio
         /// Delete all experiments.
         /// </summary>
         /// <param name="workspaceSettings"></param>
-        public void DeleteExperiments(WorkspaceSettings workspaceSettings)
+        public void DeleteAllExperiments(WorkspaceSettings workspaceSettings)
         {
-            DeleteExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+            DeleteExperiments(workspaceSettings, GetAllExperiments(workspaceSettings));
         }
 
         /// <summary>
@@ -1562,36 +1562,36 @@ namespace AzureML.Studio
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
-        public void DeleteExperiments(string workspaceId, string authorizationToken, string location)
+        public void DeleteAllExperiments(string workspaceId, string authorizationToken, string location)
         {
-            DeleteExperiments(workspaceId, authorizationToken, location, GetExperiments(workspaceId, authorizationToken, location));
+            DeleteExperiments(workspaceId, authorizationToken, location, GetAllExperiments(workspaceId, authorizationToken, location));
         }
 
         /// <summary>
         /// Delete all experiments.
         /// </summary>
         /// <param name="workspace"></param>
-        public void DeleteExperiments(Workspace workspace)
+        public void DeleteAllExperiments(Workspace workspace)
         {
-            DeleteExperiments(workspace, GetExperiments(workspace));
+            DeleteExperiments(workspace, GetAllExperiments(workspace));
         }
 
         /// <summary>
         /// Delete all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspacesSettings"></param>
-        public void DeleteExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
+        public void DeleteAllExperiments(IEnumerable<WorkspaceSettings> workspacesSettings)
         {
-            workspacesSettings.ForEach(ws => DeleteExperiments(ws));
+            workspacesSettings.ForEach(ws => DeleteAllExperiments(ws));
         }
 
         /// <summary>
         /// Delete all experiments in selected workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
-        public void DeleteExperiments(IEnumerable<Workspace> workspaces)
+        public void DeleteAllExperiments(IEnumerable<Workspace> workspaces)
         {
-            workspaces.ForEach(w => DeleteExperiments(w));
+            workspaces.ForEach(w => DeleteAllExperiments(w));
         }
 
         /// <summary>
@@ -1815,9 +1815,9 @@ namespace AzureML.Studio
         /// Export all experiments as JSON.
         /// </summary>
         /// <param name="workspaceSettings"></param>
-        public void ExportExperiments(WorkspaceSettings workspaceSettings)
+        public void ExportAllExperiments(WorkspaceSettings workspaceSettings)
         {
-            ExportExperiments(workspaceSettings, GetExperiments(workspaceSettings));
+            ExportExperiments(workspaceSettings, GetAllExperiments(workspaceSettings));
         }
 
         /// <summary>
@@ -1826,9 +1826,9 @@ namespace AzureML.Studio
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
         /// <param name="location"></param>
-        public void ExportExperiments(string workspaceId, string authorizationToken, string location)
+        public void ExportAllExperiments(string workspaceId, string authorizationToken, string location)
         {
-            ExportExperiments(new WorkspaceSettings()
+            ExportAllExperiments(new WorkspaceSettings()
             {
                 WorkspaceId = workspaceId,
                 AuthorizationToken = authorizationToken,
@@ -1840,13 +1840,13 @@ namespace AzureML.Studio
         /// Export all experiments as JSON.
         /// </summary>
         /// <param name="workspace"></param>
-        public void ExportExperiments(Workspace workspace)
+        public void ExportAllExperiments(Workspace workspace)
         {
-            ExportExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
+            ExportAllExperiments(workspace.WorkspaceId, workspace.AuthorizationToken.PrimaryToken, workspace.Region);
         }
 
         /// <summary>
-        /// Import experiment as JSON.
+        /// Import experiment from JSON.
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="inputFile"></param>
@@ -1856,7 +1856,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import experiment as JSON to specific workspaces.
+        /// Import experiment from JSON to specific workspaces.
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="inputFile"></param>
@@ -1866,7 +1866,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import experiment as JSON.
+        /// Import experiment from JSON.
         /// </summary>
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
@@ -1883,7 +1883,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import experiment as JSON.
+        /// Import experiment from JSON.
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="inputFile"></param>
@@ -1893,7 +1893,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import experiment as JSON to specific workspaces.
+        /// Import experiment from JSON to specific workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="inputFile"></param>
@@ -1903,7 +1903,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import new experiment as JSON.
+        /// Import new experiment from JSON.
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <param name="inputFile"></param>
@@ -1914,7 +1914,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import new experiment as JSON to specific workspaces. 
+        /// Import new experiment from JSON to specific workspaces. 
         /// </summary>
         /// <param name="workspacesSettings"></param>
         /// <param name="inputFile"></param>
@@ -1925,7 +1925,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import new experiment as JSON.
+        /// Import new experiment from JSON.
         /// </summary>
         /// <param name="workspaceId"></param>
         /// <param name="authorizationToken"></param>
@@ -1943,7 +1943,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import new experiment as JSON.
+        /// Import new experiment from JSON.
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="inputFile"></param>
@@ -1954,7 +1954,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Import new experiment as JSON to specific workspaces.
+        /// Import new experiment from JSON to specific workspaces.
         /// </summary>
         /// <param name="workspaces"></param>
         /// <param name="inputFile"></param>
@@ -2013,9 +2013,9 @@ namespace AzureML.Studio
         /// </summary>
         /// <param name="sourceWorkspaceSettings"></param>
         /// <param name="destinationWorkspaceSettings"></param>
-        public void CopyExperiments(WorkspaceSettings sourceWorkspaceSettings, WorkspaceSettings destinationWorkspaceSettings)
+        public void CopyAllExperiments(WorkspaceSettings sourceWorkspaceSettings, WorkspaceSettings destinationWorkspaceSettings)
         {
-            CopyExperiments(sourceWorkspaceSettings, GetExperiments(sourceWorkspaceSettings), destinationWorkspaceSettings);
+            CopyExperiments(sourceWorkspaceSettings, GetAllExperiments(sourceWorkspaceSettings), destinationWorkspaceSettings);
         }
 
         /// <summary>
@@ -2156,7 +2156,7 @@ namespace AzureML.Studio
         }
 
         /// <summary>
-        /// Get transform.
+        /// Get transforms.
         /// </summary>
         /// <param name="workspaceSettings"></param>
         /// <returns></returns>
