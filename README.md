@@ -66,10 +66,10 @@ Alternatively, create an Azure Account with a subscription.
 
 And create a workspace withing the portal:
 
-![azureportalresources](assets/azure-portal-resources.png){:height="50%" width="50%"}
-![azureportalresourcescreate](assets/azure-portal-resources-create.png){:height="50%" width="50%"}
-![azureportalresourcesprice](assets/azure-portal-resources-price.png){:height="50%" width="50%"}
-![azureportalresourcespricing](assets/azure-portal-resources-pricing.png){:height="50%" width="50%"}
+![azureportalresources](assets/azure-portal-resources.png)
+![azureportalresourcescreate](assets/azure-portal-resources-create.png)
+![azureportalresourcesprice](assets/azure-portal-resources-price.png)
+![azureportalresourcespricing](assets/azure-portal-resources-pricing.png)
 
 ### Software
 
