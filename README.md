@@ -28,10 +28,59 @@ that I used later as a base for the current solution
   - [Solution Base Overview](#solution-base-overview)  
 - [Table of Contents](#table-of-contents)  
 - [Prerequisites](#prerequisites)
+  - [Azure Machine Learning Studio](#azure-machine-learning-studio)
+    - [Free Workspace](#free-workspace)
+    - [Azure Subscription](#azure-subscription)
+  - [Software](#software)
+  - [Tools & Libraries](#tools-libraries)
 - [Usage](#usage)
+- [Testing](#testing)
 - [Learnings](#learnings)
 - [Credits](#credits)
 - [Helpful Materials](#helpful-materials)
+
+## Prerequisites
+
+### Azure Machine Learning Studio
+
+This solution was created for the use of Azure Machine Learning Studio resources - *Workspace, Experiment, Database, Modules, etc.*
+We need a proper account to be able to work by using this library.
+
+We can create different types of workspaces, because our library should deal with any type of account.
+
+#### Free Workspace
+
+Visit the main website of Azure Machine Learning Studio and simply create a new account - https://studio.azureml.net/
+
+You should notice this:
+
+![azurestudiofree](assets/azure-studio-free.PNG)
+
+#### Azure Subscription
+
+Alternatively, create an Azure Account with a subscription.
+
+- [Azure Free Account](https://azure.microsoft.com/en-us/offers/ms-azr-0044p/)
+- [Azure for Students](https://azure.microsoft.com/en-us/free/students/)
+- [Azure Pass](https://www.microsoftazurepass.com/Home/HowTo)
+
+And create a workspace withing the portal:
+![azureportalresources](assets/azure-portal-resources.png)
+![azureportalresourcescreate](assets/azure-portal-resources-create.png)
+![azureportalresourcesprice](assets/azure-portal-resources-price.png)
+![azureportalresourcespricing](assets/azure-portal-resources-pricing.png)
+
+### Software
+
+### Tools & Libraries
+
+## Usage
+
+## Testing
+
+## Learnings
+
+## Credits
 
 ## Helpful Materials
 
