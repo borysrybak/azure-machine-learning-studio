@@ -9,7 +9,7 @@ This repository contains a proof of concept project for **[Azure Machine Learnin
 The solution includes **[.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)** Class Libraries (*DLLs*),
 which can be incorporated in many .NET applications and be used for scale and automate Azure ML Studio workspaces and experiments.
 
-At the moment, the project is in the pre-release phase - :construction: __be aware of possible errors and exceptions before using it!__ :construction:.
+:construction: At the moment, the project is in the pre-release phase - __be aware of possible errors and exceptions before using it!__ :construction:
 
 ### Solution Base Overview
 
